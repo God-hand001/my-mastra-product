@@ -13,7 +13,7 @@ function greeting(): string {
 
 export function HomePage() {
   const navigate = useNavigate();
-  const createTask = useTaskStore(s => s.createTask);
+  const { createTask } = useTaskStore();
 
   const handleSubmit = (text: string) => {
     // 创建任务(乐观插入列表)→ 带首条消息跳转到任务视图,

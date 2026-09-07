@@ -18,7 +18,7 @@ interface MastraPart {
   };
 }
 
-interface MastraMessage {
+export interface MastraMessage {
   id: string;
   role: string;
   content?: { format?: number; parts?: MastraPart[] } | string;

@@ -2,11 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { AssistantRuntimeProvider } from '@assistant-ui/react';
 import { useChatRuntime } from '@assistant-ui/react-ai-sdk';
-import { Thread, ThreadConfigProvider } from '@assistant-ui/react-ui';
 import type { UIMessage } from 'ai';
 import { createTaskTransport } from '../lib/transport';
 import { toUIMessages, type MastraMessage } from '../lib/messages';
-import { ToolCallCard } from '../components/ToolCallCard';
+import { ChatThread } from '../components/ChatThread';
 
 const AGENT_ID = 'agent';
 
@@ -61,29 +60,9 @@ export function TaskPage() {
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
-      <ThreadConfigProvider
-        config={{
-          assistantMessage: { components: { ToolFallback: ToolCallCard } },
-          welcome: { message: '这是你的任务空间,描述一个任务开始吧' },
-          strings: {
-            composer: {
-              input: { placeholder: '继续追问或补充任务要求…' },
-              send: { tooltip: '发送' },
-              cancel: { tooltip: '停止' },
-            },
-            assistantMessage: {
-              reload: { tooltip: '重新生成' },
-              copy: { tooltip: '复制' },
-            },
-            userMessage: { edit: { tooltip: '编辑' } },
-            thread: { scrollToBottom: { tooltip: '回到底部' } },
-          },
-        }}
-      >
-        <div className="task-thread-wrap">
-          <Thread />
-        </div>
-      </ThreadConfigProvider>
+      <div className="task-thread-wrap">
+        <ChatThread />
+      </div>
     </AssistantRuntimeProvider>
   );
 }

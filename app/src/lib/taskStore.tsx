@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { deleteThread, listThreads, type TaskThread } from './agentClient';
-import { LOCAL_USER_RESOURCE } from './transport';
+import { LOCAL_USER_RESOURCE, newTaskId } from './transport';
 
 // 轻量任务状态(plan:不引 zustand,用 React context)
 // 任务 = thread;排序按最近活跃(updatedAt 倒序)

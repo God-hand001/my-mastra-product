@@ -18,7 +18,7 @@ function relativeTime(iso: string): string {
 
 function TaskListItem({ task }: { task: TaskThread }) {
   const navigate = useNavigate();
-  const removeTask = useTaskStore(s => s.removeTask);
+  const { removeTask } = useTaskStore();
   const { pathname } = useLocation();
   const isCurrent = matchPath(`/task/${task.id}`, pathname) != null;
 
