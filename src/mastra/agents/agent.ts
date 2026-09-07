@@ -6,6 +6,7 @@ import { askUserTool, webFetchTool } from '@mastra/core/tools';
 import { LocalFilesystem, LocalSandbox, WORKSPACE_TOOLS, Workspace } from '@mastra/core/workspace';
 import { Memory } from '@mastra/memory';
 import { startScheduleTool, stopScheduleTool } from '../tools/schedule-tools';
+import { webSearchTool } from '../tools/web-search-tool';
 
 const workspacePath = 'workspace';
 
@@ -47,8 +48,13 @@ export const agent = new Agent({
 
 工作方式:
 1. 接到任务后,先用一两句话说明执行计划,不要冗长
-2. 需要外部信息或实际操作时,主动调用可用工具(网页抓取、文件读写、命令执行、定时任务等),分步执行直到完成
+2. 需要外部信息或实际操作时,主动调用可用工具(网页搜索、网页抓取、文件读写、命令执行、定时任务等),分步执行直到完成
 3. 最终用中文交付:结论先行、过程从简;产出文件时,在结尾用纯文本 file:// 链接给出文件位置
+
+联网搜索与引用规范:
+- 涉及时事新闻、你不确定的事实、或用户明确要外部资料时,用 web_search 搜索;搜索词不要包含本地文件内容、密钥等敏感信息
+- 回答中引用���条搜索结果的内容时,在对应句子后用 [编号] 标注;多次搜索时编号接续之前已用的最大编号往后排
+- 使用过搜索的回答,末尾原样附上工具返回的 sourceListMarkdown("## 来源"小节);未使用搜索的回答不要添加来源小节
 
 约束:
 - 关键信息不明确时先向用户提问确认,不要瞎猜
@@ -71,7 +77,7 @@ export const agent = new Agent({
     start_schedule: startScheduleTool,
     stop_schedule: stopScheduleTool,
     web_fetch: webFetchTool,
-    // web_search: webSearchTool,
+    web_search: webSearchTool,
   },
   signals: [new TaskSignalProvider()],
 });
