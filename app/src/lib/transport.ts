@@ -15,32 +15,15 @@ export function attachmentSection(attachments: PickedAttachment[]): string {
 // 一个任务 = 一个 thread:transport 负责在请求体带上 memory 参数
 // (Mastra agent.stream 的形状为 memory: { thread, resource },
 // chatRoute 把 body 多余字段透传给 agent.stream,见 plan 模块交互)
-// M2:getAttachments 非空时,发送前把附件全文合并进最后一条用户消息
-export function createTaskTransport(
-  threadId: string,
-  getAttachments?: () => PickedAttachment[],
-  onAttachmentsConsumed?: () => void,
-) {
+export function createTaskTransport(threadId: string) {
   return new AssistantChatTransport({
     api: '/chat/agent',
-    prepareSendMessagesRequest: ({ messages }) => {
-      const attachments = getAttachments?.() ?? [];
-      let bodyMessages = messages;
-      if (attachments.length > 0) {
-        const section = attachmentSection(attachments);
-        bodyMessages = messages.map((m, i) => {
-          if (i !== messages.length - 1 || m.role !== 'user') return m;
-          return { ...m, parts: [...m.parts, { type: 'text' as const, text: `\n\n${section}` }] };
-        });
-        onAttachmentsConsumed?.();
-      }
-      return {
-        body: {
-          messages: bodyMessages,
-          memory: { thread: threadId, resource: LOCAL_USER_RESOURCE },
-        },
-      };
-    },
+    prepareSendMessagesRequest: ({ messages }) => ({
+      body: {
+        messages,
+        memory: { thread: threadId, resource: LOCAL_USER_RESOURCE },
+      },
+    }),
   });
 }
 

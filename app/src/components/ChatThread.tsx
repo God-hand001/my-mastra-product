@@ -1,5 +1,6 @@
+import { useState, type KeyboardEvent } from 'react';
 import {
-  ComposerPrimitive,
+  AssistantRuntime,
   MessagePrimitive,
   ThreadPrimitive,
   type TextMessagePartProps,
@@ -8,6 +9,7 @@ import { MarkdownTextPrimitive } from '@assistant-ui/react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ToolCallCard } from './ToolCallCard';
 import { AttachmentBar } from './AttachmentBar';
+import { attachmentSection } from '../lib/transport';
 import type { PickedAttachment } from '../lib/driveClient';
 
 // Markdown 渲染(F5):remark-gfm 提供表格/删除线等扩展语法支持
@@ -15,7 +17,7 @@ const MarkdownText = () => (
   <MarkdownTextPrimitive remarkPlugins={[remarkGfm]} className="chat-markdown" />
 );
 
-// 附件段落(由 transport 合并进消息)渲染为独立的可下载文档卡片
+// 附件段落渲染为独立的可下载文档卡片
 // 标记格式:【附件:文件名(大小)#网盘id】;标记后的附件全文不显示在气泡里
 function UserText({ text }: TextMessagePartProps) {
   const first = /【附件:(.+?)(?:[（(]([^）)]+)[）)])?(?:#([0-9a-f-]{36}))?】/.exec(text);
@@ -77,19 +79,6 @@ function UserMessage() {
   );
 }
 
-function AssistantMessage() {
-  return (
-    <div className="msg msg-assistant">
-      <MessagePrimitive.Parts
-        components={{
-          Text: MarkdownText,
-          tools: { Fallback: ToolCallCard },
-        }}
-      />
-    </div>
-  );
-}
-
 function ChatMessage() {
   return (
     <MessagePrimitive.Root>
@@ -103,17 +92,56 @@ function ChatMessage() {
   );
 }
 
-// 任务对话主视图(assistant-ui primitives 自建,替代停更的 react-ui 预置包)
-// M2:composer 支持"+"附件与附件条(发送时由 transport 合并进消息)
+function AssistantMessage() {
+  return (
+    <div className="msg msg-assistant">
+      <MessagePrimitive.Parts
+        components={{
+          Text: MarkdownText,
+          tools: { Fallback: ToolCallCard },
+        }}
+      />
+    </div>
+  );
+}
+
+// 任务对话主视图(assistant-ui primitives 自建)
+// M2:附件在发送时拼进消息本体(实时即显卡片),发送/回车走同一逻辑
 export function ChatThread({
+  runtime,
   attachments,
   onOpenPicker,
   onRemoveAttachment,
+  onAttachmentsConsumed,
 }: {
+  runtime: AssistantRuntime;
   attachments: PickedAttachment[];
   onOpenPicker: () => void;
   onRemoveAttachment: (id: string) => void;
+  onAttachmentsConsumed: () => void;
 }) {
+  const [input, setInput] = useState('');
+  const composer = runtime.thread.composer;
+
+  const handleSend = () => {
+    if (runtime.thread.getState().isRunning) return;
+    const text = input.trim();
+    if (!text && attachments.length === 0) return;
+    const section = attachments.length > 0 ? `\n\n${attachmentSection(attachments)}` : '';
+    composer.setText(text + section);
+    composer.send();
+    composer.setText('');
+    setInput('');
+    if (attachments.length > 0) onAttachmentsConsumed();
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
     <ThreadPrimitive.Root className="chat-root">
       <ThreadPrimitive.Viewport autoScroll className="chat-viewport">
@@ -124,42 +152,42 @@ export function ChatThread({
       </ThreadPrimitive.Viewport>
 
       <div className="chat-composer-area">
-        <ComposerPrimitive.Root className="chat-composer">
+        <div className="chat-composer">
           {attachments.length > 0 && (
-            <AttachmentBar
-              attachments={attachments}
-              onRemove={onRemoveAttachment}
-            />
+            <AttachmentBar attachments={attachments} onRemove={onRemoveAttachment} />
           )}
           <div className="chat-composer-row">
-            <button
-              type="button"
-              className="task-input-plus"
-              title="添加附件"
-              onClick={onOpenPicker}
-            >
+            <button type="button" className="task-input-plus" title="添加附件" onClick={onOpenPicker}>
               +
             </button>
-            <ComposerPrimitive.Input
+            <textarea
               className="chat-composer-input"
               placeholder="继续追问或补充任务要求…"
               rows={1}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
             />
           </div>
           <div className="chat-composer-actions">
             {/* 运行中显示"停止",空闲显示"发送" */}
             <ThreadPrimitive.If running>
-              <ComposerPrimitive.Cancel className="chat-btn chat-btn-cancel">
+              <button type="button" className="chat-btn chat-btn-cancel" onClick={() => composer.cancel()}>
                 停止
-              </ComposerPrimitive.Cancel>
+              </button>
             </ThreadPrimitive.If>
             <ThreadPrimitive.If running={false}>
-              <ComposerPrimitive.Send className="chat-btn chat-btn-send">
+              <button
+                type="button"
+                className="chat-btn chat-btn-send"
+                onClick={handleSend}
+                disabled={!input.trim() && attachments.length === 0}
+              >
                 发送
-              </ComposerPrimitive.Send>
+              </button>
             </ThreadPrimitive.If>
           </div>
-        </ComposerPrimitive.Root>
+        </div>
       </div>
     </ThreadPrimitive.Root>
   );

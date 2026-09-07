@@ -3,7 +3,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import { AssistantRuntimeProvider } from '@assistant-ui/react';
 import { useChatRuntime } from '@assistant-ui/react-ai-sdk';
 import type { UIMessage } from 'ai';
-import { createTaskTransport } from '../lib/transport';
+import { attachmentSection, createTaskTransport } from '../lib/transport';
 import { toUIMessages, type MastraMessage } from '../lib/messages';
 import { ChatThread } from '../components/ChatThread';
 import { AttachmentPicker } from '../components/AttachmentPicker';
@@ -69,42 +69,42 @@ function TaskChat({
   pendingFirstMessage?: string;
   initialAttachments?: PickedAttachment[];
 }) {
-  // M2:任务内附件 —— 发送时由 transport 合并进消息,发送成功后清空
+  // M2:任务内附件 —— 发送时拼进消息本体(实时即显卡片),发送后清空
   // initialAttachments:首页创建任务时带过来的附件(随首条消息注入)
   const [attachments, setAttachments] = useState<PickedAttachment[]>(initialAttachments ?? []);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const attachmentsRef = useRef<PickedAttachment[]>(attachments);
-  attachmentsRef.current = attachments;
 
   const runtime = useChatRuntime({
-    transport: createTaskTransport(
-      taskId,
-      () => attachmentsRef.current,
-      () => {
-        attachmentsRef.current = [];
-        setAttachments([]);
-      },
-    ),
+    transport: createTaskTransport(taskId),
     id: taskId,
     messages: history,
   });
 
   // 首条消息:仅当任务为空且创建时带了输入内容时自动发出(F2)
+  // 附件全文随首条消息一起注入(实时即显卡片)
   const sentRef = useRef(false);
   useEffect(() => {
     if (sentRef.current) return;
-    if (!pendingFirstMessage || history.length > 0) return;
+    if (!pendingFirstMessage && (initialAttachments?.length ?? 0) === 0) return;
+    if (history.length > 0) return;
     sentRef.current = true;
-    runtime.thread.append(pendingFirstMessage);
-  }, [runtime, pendingFirstMessage, history.length]);
+    const section =
+      initialAttachments && initialAttachments.length > 0
+        ? `\n\n${attachmentSection(initialAttachments)}`
+        : '';
+    runtime.thread.append((pendingFirstMessage ?? '') + section);
+    setAttachments([]);
+  }, [runtime, pendingFirstMessage, initialAttachments, history.length]);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <div className="task-thread-wrap">
         <ChatThread
+          runtime={runtime}
           attachments={attachments}
           onOpenPicker={() => setPickerOpen(true)}
           onRemoveAttachment={id => setAttachments(prev => prev.filter(a => a.id !== id))}
+          onAttachmentsConsumed={() => setAttachments([])}
         />
       </div>
       {pickerOpen && (
