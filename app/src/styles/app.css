@@ -229,3 +229,82 @@ body {
   color: #a9b0b8;
   cursor: default;
 }
+
+/* ===== 任务视图 ===== */
+
+.task-loading {
+  padding: 40px;
+  color: #86909c;
+  font-size: 14px;
+}
+
+.task-thread-wrap {
+  height: 100vh;
+}
+
+/* ===== 工具调用卡片 ===== */
+
+.tool-call-card {
+  border: 1px solid #e5e6eb;
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  background: #fafbfc;
+  font-size: 13px;
+}
+
+.tool-call-card.is-running {
+  border-color: #b4d4ff;
+  background: #f4f9ff;
+}
+
+.tool-call-card.is-error {
+  border-color: #fdcdc5;
+  background: #fff5f3;
+}
+
+.tool-call-card summary {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+}
+
+.tool-call-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.tool-call-name {
+  font-weight: 500;
+}
+
+.tool-call-status {
+  color: #86909c;
+  font-size: 12px;
+}
+
+.tool-call-status.running {
+  color: #1c7dff;
+}
+
+.tool-call-body {
+  margin-top: 8px;
+}
+
+.tool-call-label {
+  font-size: 12px;
+  color: #86909c;
+  margin-bottom: 2px;
+}
+
+.tool-call-pre {
+  background: #f2f3f5;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0 0 8px;
+}
