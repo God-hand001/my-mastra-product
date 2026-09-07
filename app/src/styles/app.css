@@ -1,0 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: #1f2329;
+}
+
+.app-shell {
+  display: flex;
+  height: 100vh;
+}
+
+.app-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  border-right: 1px solid #e5e6eb;
+  background: #f7f8fa;
+  padding: 16px;
+}
+
+.app-main {
+  flex: 1;
+  overflow-y: auto;
+  background: #fff;
+}
