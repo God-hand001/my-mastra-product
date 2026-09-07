@@ -578,18 +578,32 @@ body {
   line-height: 1.6;
 }
 
-/* 附件文档卡片(用户消息内,千问办公样式) */
+/* 附件文档卡片(用户消息内,千问办公样式):独立成行,可点击下载 */
+.msg-user {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
 .msg-file-card {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 10px;
+  align-self: stretch;
+  width: 100%;
   background: #fff;
   border: 1px solid #e5e6eb;
   border-radius: 12px;
   padding: 10px 14px;
-  max-width: 320px;
   box-shadow: 0 2px 8px rgba(31, 35, 41, 0.06);
   text-align: left;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.msg-file-card:hover {
+  border-color: #1c7dff;
 }
 
 .msg-file-icon {

@@ -4,9 +4,12 @@ import { formatSize, type PickedAttachment } from './driveClient';
 // 所有任务属于同一个本地资源(plan:任务 = thread,resource 固定)
 export const LOCAL_USER_RESOURCE = 'local-user';
 
-// 附件段落的标记格式(渲染层据此把段落显示为文档卡片)
+// 附件段落的标记格式(渲染层据此把段落显示为可下载的文档卡片)
+// 格式:【附件:文件名(大小)#网盘文件id】
 export function attachmentSection(attachments: PickedAttachment[]): string {
-  return attachments.map(a => `【附件:${a.name}(${formatSize(a.size)})】\n${a.text}`).join('\n\n');
+  return attachments
+    .map(a => `【附件:${a.name}(${formatSize(a.size)})#${a.id}】\n${a.text}`)
+    .join('\n\n');
 }
 
 // 一个任务 = 一个 thread:transport 负责在请求体带上 memory 参数

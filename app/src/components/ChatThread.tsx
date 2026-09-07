@@ -15,26 +15,57 @@ const MarkdownText = () => (
   <MarkdownTextPrimitive remarkPlugins={[remarkGfm]} className="chat-markdown" />
 );
 
-// 附件段落(由 transport 合并进消息)渲染为文档卡片,而不是原始文本
-// 标记格式:【附件:文件名(大小)】
+// 附件段落(由 transport 合并进消息)渲染为独立的可下载文档卡片
+// 标记格式:【附件:文件名(大小)#网盘id】;标记后的附件全文不显示在气泡里
 function UserText({ text }: TextMessagePartProps) {
-  const m = /^\n\n【附件:(.+?)（([^）]+)）】/.exec(text);
-  if (m) {
-    const name = m[1];
-    const size = m[2];
-    const ext = (name.split('.').pop() ?? '').toLowerCase();
-    const badge = ext === 'docx' ? 'W' : ext === 'xlsx' ? 'X' : ext === 'pdf' ? 'P' : '📄';
-    return (
-      <div className="msg-file-card">
-        <span className={`msg-file-icon file-${ext || 'default'}`}>{badge}</span>
-        <div className="msg-file-info">
-          <div className="msg-file-name">{name}</div>
-          <div className="msg-file-size">{ext.toUpperCase()} · {size}</div>
-        </div>
-      </div>
-    );
+  const re = /【附件:(.+?)(?:（([^）]+)）)?(?:#([0-9a-f-]{36}))?】/g;
+  const cards: { name: string; size?: string; id?: string }[] = [];
+  let head = '';
+  let last = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) {
+    head += text.slice(last, m.index);
+    last = re.lastIndex;
+    cards.push({ name: m[1], size: m[2], id: m[3] });
   }
-  return <div className="msg-user-text">{text}</div>;
+
+  const trimmed = head.trim();
+  return (
+    <>
+      {trimmed && <div className="msg-user-text">{trimmed}</div>}
+      {cards.map((c, i) => {
+        const ext = (c.name.split('.').pop() ?? '').toLowerCase();
+        const badge = ext === 'docx' ? 'W' : ext === 'xlsx' ? 'X' : ext === 'pdf' ? 'P' : '📄';
+        const inner = (
+          <>
+            <span className={`msg-file-icon file-${ext || 'default'}`}>{badge}</span>
+            <div className="msg-file-info">
+              <div className="msg-file-name">{c.name}</div>
+              <div className="msg-file-size">
+                {ext.toUpperCase()}
+                {c.size ? ` · ${c.size}` : ''}
+              </div>
+            </div>
+          </>
+        );
+        return c.id ? (
+          <a
+            key={i}
+            className="msg-file-card"
+            href={`/drive/files/${c.id}/download`}
+            download={c.name}
+            title="点击下载"
+          >
+            {inner}
+          </a>
+        ) : (
+          <div key={i} className="msg-file-card">
+            {inner}
+          </div>
+        );
+      })}
+    </>
+  );
 }
 
 function UserMessage() {
