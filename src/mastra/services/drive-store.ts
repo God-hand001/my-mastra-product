@@ -97,7 +97,11 @@ async function extractText(
     }
     if (ext === 'pdf') {
       // pdfjs-dist legacy 构建(Node 环境);pdf-parse@1.1.1 的 exports 禁止子路径引用,已弃用
-      const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+      // 说明符运行时拼接:esbuild 在 Windows 上会把静态动态导入改写成反斜杠路径,导致 Node 报非法包名
+      const pdfjsSpec = ['pdfjs-dist', 'legacy', 'build', 'pdf.mjs'].join('/');
+      const pdfjs = (await import(
+        /* @vite-ignore */ pdfjsSpec
+      )) as typeof import('pdfjs-dist/legacy/build/pdf.mjs');
       const doc = await pdfjs.getDocument({
         data: new Uint8Array(buffer),
         useSystemFonts: false,
