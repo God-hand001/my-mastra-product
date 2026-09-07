@@ -23,6 +23,9 @@
     "@mastra/libsql": "1.22.3",
     "@mastra/memory": "1.28.2",
     "@mastra/observability": "1.17.5",
+    "mammoth": "^1.12.2",
+    "pdf-parse": "^2.4.5",
+    "xlsx": "^0.18.5",
     "zod": "^4.4.3"
   },
   "devDependencies": {
