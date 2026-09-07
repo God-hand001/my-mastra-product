@@ -662,6 +662,16 @@ body {
   color: #c2c7cf;
 }
 
+.chat-composer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-composer-row .chat-composer-input {
+  flex: 1;
+}
+
 .chat-composer-actions {
   display: flex;
   justify-content: flex-end;

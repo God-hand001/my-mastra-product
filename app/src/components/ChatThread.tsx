@@ -7,6 +7,8 @@ import {
 import { MarkdownTextPrimitive } from '@assistant-ui/react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ToolCallCard } from './ToolCallCard';
+import { AttachmentBar } from './AttachmentBar';
+import type { PickedAttachment } from '../lib/driveClient';
 
 // Markdown 渲染(F5):remark-gfm 提供表格/删除线等扩展语法支持
 const MarkdownText = () => (
@@ -48,7 +50,16 @@ function ChatMessage() {
 }
 
 // 任务对话主视图(assistant-ui primitives 自建,替代停更的 react-ui 预置包)
-export function ChatThread() {
+// M2:composer 支持"+"附件与附件条(发送时由 transport 合并进消息)
+export function ChatThread({
+  attachments,
+  onOpenPicker,
+  onRemoveAttachment,
+}: {
+  attachments: PickedAttachment[];
+  onOpenPicker: () => void;
+  onRemoveAttachment: (id: string) => void;
+}) {
   return (
     <ThreadPrimitive.Root className="chat-root">
       <ThreadPrimitive.Viewport autoScroll className="chat-viewport">
@@ -60,12 +71,27 @@ export function ChatThread() {
 
       <div className="chat-composer-area">
         <ComposerPrimitive.Root className="chat-composer">
-          <ComposerPrimitive.Input
-            className="chat-composer-input"
-            placeholder="继续追问或补充任务要求…"
-            autoFocus
-            rows={1}
-          />
+          {attachments.length > 0 && (
+            <AttachmentBar
+              attachments={attachments}
+              onRemove={onRemoveAttachment}
+            />
+          )}
+          <div className="chat-composer-row">
+            <button
+              type="button"
+              className="task-input-plus"
+              title="添加附件"
+              onClick={onOpenPicker}
+            >
+              +
+            </button>
+            <ComposerPrimitive.Input
+              className="chat-composer-input"
+              placeholder="继续追问或补充任务要求…"
+              rows={1}
+            />
+          </div>
           <div className="chat-composer-actions">
             {/* 运行中显示"停止",空闲显示"发送" */}
             <ThreadPrimitive.If running>

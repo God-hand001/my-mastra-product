@@ -6,6 +6,8 @@ import type { UIMessage } from 'ai';
 import { createTaskTransport } from '../lib/transport';
 import { toUIMessages, type MastraMessage } from '../lib/messages';
 import { ChatThread } from '../components/ChatThread';
+import { AttachmentPicker } from '../components/AttachmentPicker';
+import type { PickedAttachment } from '../lib/driveClient';
 
 const AGENT_ID = 'agent';
 
@@ -61,8 +63,21 @@ function TaskChat({
   history: UIMessage[];
   pendingFirstMessage?: string;
 }) {
+  // M2:任务内附件 —— 发送时由 transport 合并进消息,发送成功后清空
+  const [attachments, setAttachments] = useState<PickedAttachment[]>([]);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const attachmentsRef = useRef<PickedAttachment[]>([]);
+  attachmentsRef.current = attachments;
+
   const runtime = useChatRuntime({
-    transport: createTaskTransport(taskId),
+    transport: createTaskTransport(
+      taskId,
+      () => attachmentsRef.current,
+      () => {
+        attachmentsRef.current = [];
+        setAttachments([]);
+      },
+    ),
     id: taskId,
     messages: history,
   });
@@ -79,8 +94,23 @@ function TaskChat({
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <div className="task-thread-wrap">
-        <ChatThread />
+        <ChatThread
+          attachments={attachments}
+          onOpenPicker={() => setPickerOpen(true)}
+          onRemoveAttachment={id => setAttachments(prev => prev.filter(a => a.id !== id))}
+        />
       </div>
+      {pickerOpen && (
+        <AttachmentPicker
+          onClose={() => setPickerOpen(false)}
+          onPick={a => {
+            if (attachments.some(x => x.id === a.id)) return true;
+            if (attachments.length >= 5) return false;
+            setAttachments(prev => [...prev, a]);
+            return true;
+          }}
+        />
+      )}
     </AssistantRuntimeProvider>
   );
 }
