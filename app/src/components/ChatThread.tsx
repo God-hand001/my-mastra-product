@@ -18,7 +18,7 @@ const MarkdownText = () => (
 // 附件段落(由 transport 合并进消息)渲染为独立的可下载文档卡片
 // 标记格式:【附件:文件名(大小)#网盘id】;标记后的附件全文不显示在气泡里
 function UserText({ text }: TextMessagePartProps) {
-  const re = /【附件:(.+?)(?:（([^）]+)）)?(?:#([0-9a-f-]{36}))?】/g;
+  const re = /【附件:(.+?)(?:[（(]([^）)]+)[）)])?(?:#([0-9a-f-]{36}))?】/g;
   const cards: { name: string; size?: string; id?: string }[] = [];
   let head = '';
   let last = 0;
