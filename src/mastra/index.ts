@@ -11,6 +11,7 @@ import {
 import { agent } from './agents/agent';
 import { startScheduleTool, stopScheduleTool } from './tools/schedule-tools';
 import { chatRoute } from '@mastra/ai-sdk';
+import { driveRoutes } from './server/drive-routes';
 
 export const mastra = new Mastra({
   bundler: {
@@ -23,6 +24,7 @@ export const mastra = new Mastra({
       chatRoute({
         path: '/chat/:agentId',
       }),
+      ...driveRoutes,
     ],
   },
   storage: new MastraCompositeStore({
