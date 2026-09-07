@@ -37,7 +37,13 @@ export function AttachmentPicker({
     setUploading(true);
     try {
       for (const f of Array.from(files)) {
-        const res = await uploadFile(f);
+        let res;
+        try {
+          res = await uploadFile(f);
+        } catch (e) {
+          setError(`上传出错: ${e instanceof Error ? e.message : String(e)}`);
+          break;
+        }
         if (res.error || !res.meta || res.text === undefined) {
           setError(res.error ?? '上传失败');
           break;

@@ -21,9 +21,14 @@ export async function uploadFile(file: File): Promise<UploadResult> {
   const form = new FormData();
   form.append('file', file);
   const res = await fetch(API, { method: 'POST', body: form });
-  const data = await res.json();
-  if (!res.ok) return { error: data.error ?? `上传失败(${res.status})` };
-  return data as UploadResult;
+  try {
+    const data = await res.json();
+    if (!res.ok) return { error: data.error ?? `上传失败(${res.status})` };
+    return data as UploadResult;
+  } catch {
+    // 非 JSON 响应(如代理未配置时返回的 HTML)
+    return { error: `上传失败:服务返回异常响应(${res.status})` };
+  }
 }
 
 export async function listFiles(): Promise<DriveFileMeta[]> {
