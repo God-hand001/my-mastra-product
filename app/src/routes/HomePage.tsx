@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TaskInput } from '../components/TaskInput';
+import type { Attachment } from '../components/AttachmentBar';
 import { useTaskStore } from '../lib/taskStore';
 
 function greeting(): string {
@@ -14,12 +16,20 @@ function greeting(): string {
 export function HomePage() {
   const navigate = useNavigate();
   const { createTask } = useTaskStore();
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
 
-  const handleSubmit = (text: string) => {
-    // 创建任务(乐观插入列表)→ 带首条消息跳转到任务视图,
-    // TaskPage 会把它作为第一条消息自动发出(plan 模块交互)
-    const id = createTask(text);
-    navigate(`/task/${id}`, { state: { initialMessage: text } });
+  const handleSubmit = (text: string, list: Attachment[]) => {
+    // M2 F2:附件全文已在上传/选择时由后端提取,这里拼装进首条消息
+    // (前端中转全文方案,见 plan 模块交互)
+    const attachmentSections = list
+      .map(a => `【附件:${a.name}】\n${a.text}`)
+      .join('\n\n');
+    const firstMessage = attachmentSections
+      ? `${text.trim()}${text.trim() ? '\n\n' : ''}${attachmentSections}`
+      : text.trim();
+
+    const id = createTask(firstMessage);
+    navigate(`/task/${id}`, { state: { initialMessage: firstMessage } });
   };
 
   return (
@@ -30,7 +40,11 @@ export function HomePage() {
           <br />
           准备好创建点什么了吗?
         </h1>
-        <TaskInput onSubmit={handleSubmit} />
+        <TaskInput
+          onSubmit={handleSubmit}
+          attachments={attachments}
+          onAttachmentsChange={setAttachments}
+        />
       </div>
     </div>
   );
