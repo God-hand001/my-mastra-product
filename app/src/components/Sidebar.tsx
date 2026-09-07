@@ -59,6 +59,10 @@ export function Sidebar() {
         + 新任务
       </button>
 
+      <button className="drive-entry" onClick={() => navigate('/drive')}>
+        🗂 个人网盘
+      </button>
+
       <div className="sidebar-section">最近任务</div>
       <div className="task-list">
         {loading ? (

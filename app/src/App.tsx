@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { HomePage } from './routes/HomePage';
 import { TaskPage } from './routes/TaskPage';
+import { DrivePage } from './routes/DrivePage';
 import { TaskStoreProvider } from './lib/taskStore';
 
 // AppShell:左侧栏固定宽 + 右侧主区滚动(plan 模块设计)
@@ -14,6 +15,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/task/:id" element={<TaskPage />} />
+            <Route path="/drive" element={<DrivePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
