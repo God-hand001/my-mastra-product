@@ -153,3 +153,79 @@ body {
   overflow-y: auto;
   background: #fff;
 }
+
+/* ===== 首页(问候语 + 大任务输入框) ===== */
+
+.home-page {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.home-hero {
+  width: 100%;
+  max-width: 640px;
+}
+
+.home-greeting {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+.task-input-box {
+  border: 1px solid #e5e6eb;
+  border-radius: 16px;
+  padding: 14px 16px 10px;
+  box-shadow: 0 4px 16px rgba(31, 35, 41, 0.06);
+  transition: border-color 0.15s;
+}
+
+.task-input-box:focus-within {
+  border-color: #1c7dff;
+}
+
+.task-input-textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 15px;
+  font-family: inherit;
+  color: inherit;
+}
+
+.task-input-textarea::placeholder {
+  color: #c2c7cf;
+}
+
+.task-input-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.task-input-hint {
+  font-size: 12px;
+  color: #c2c7cf;
+}
+
+.task-input-send {
+  border: none;
+  border-radius: 10px;
+  background: #1c7dff;
+  color: #fff;
+  font-size: 14px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.task-input-send:disabled {
+  background: #e5e6eb;
+  color: #a9b0b8;
+  cursor: default;
+}
