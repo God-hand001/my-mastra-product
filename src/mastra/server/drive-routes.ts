@@ -31,7 +31,8 @@ export const driveRoutes = [
         if (result.error) {
           return c.json({ error: result.error }, 400);
         }
-        return c.json({ ...result.meta, text: result.text });
+        // 与前端 driveClient.uploadFile 的返回结构对齐:{ meta, text }
+        return c.json({ meta: result.meta, text: result.text });
       } catch (err) {
         const reason = err instanceof Error ? err.message : String(err);
         return c.json({ error: `上传失败: ${reason}` }, 500);
