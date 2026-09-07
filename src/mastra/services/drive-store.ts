@@ -96,12 +96,22 @@ async function extractText(
       return { text: value };
     }
     if (ext === 'pdf') {
-      // 直接引内部模块,绕开 pdf-parse@1.1.1 入口的调试自检逻辑
-      const mod = (await import('pdf-parse/lib/pdf-parse.js')) as unknown as {
-        default: (b: Buffer) => Promise<{ text: string }>;
-      };
-      const data = await mod.default(buffer);
-      return { text: data.text };
+      // pdfjs-dist legacy 构建(Node 环境);pdf-parse@1.1.1 的 exports 禁止子路径引用,已弃用
+      const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+      const doc = await pdfjs.getDocument({
+        data: new Uint8Array(buffer),
+        useSystemFonts: false,
+      }).promise;
+      const pages: string[] = [];
+      for (let p = 1; p <= doc.numPages; p++) {
+        const page = await doc.getPage(p);
+        const content = await page.getTextContent();
+        const line = content.items
+          .map(it => ('str' in it ? (it as { str: string }).str : ''))
+          .join(' ');
+        pages.push(line);
+      }
+      return { text: pages.join('\n\n') };
     }
     if (ext === 'xlsx') {
       const XLSX = await import('xlsx');
