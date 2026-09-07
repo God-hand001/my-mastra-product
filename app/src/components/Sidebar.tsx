@@ -53,7 +53,7 @@ export function Sidebar() {
 
   return (
     <aside className="app-sidebar">
-      <div className="sidebar-brand">千问助手</div>
+      <div className="sidebar-brand">嘉立创办公</div>
 
       <button className="new-task-btn" onClick={() => navigate('/')}>
         + 新任务

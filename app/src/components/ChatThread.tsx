@@ -5,10 +5,13 @@ import {
   type TextMessagePartProps,
 } from '@assistant-ui/react';
 import { MarkdownTextPrimitive } from '@assistant-ui/react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ToolCallCard } from './ToolCallCard';
 
-// Markdown 渲染(F5):assistant-ui 官方 markdown 伴生包,读取文本 part 上下文
-const MarkdownText = () => <MarkdownTextPrimitive className="chat-markdown" />;
+// Markdown 渲染(F5):remark-gfm 提供表格/删除线等扩展语法支持
+const MarkdownText = () => (
+  <MarkdownTextPrimitive remarkPlugins={[remarkGfm]} className="chat-markdown" />
+);
 
 function UserMessage() {
   return (
