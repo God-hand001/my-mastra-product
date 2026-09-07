@@ -1,8 +1,13 @@
 import { AssistantChatTransport } from '@assistant-ui/react-ai-sdk';
-import type { PickedAttachment } from './driveClient';
+import { formatSize, type PickedAttachment } from './driveClient';
 
 // 所有任务属于同一个本地资源(plan:任务 = thread,resource 固定)
 export const LOCAL_USER_RESOURCE = 'local-user';
+
+// 附件段落的标记格式(渲染层据此把段落显示为文档卡片)
+export function attachmentSection(attachments: PickedAttachment[]): string {
+  return attachments.map(a => `【附件:${a.name}(${formatSize(a.size)})】\n${a.text}`).join('\n\n');
+}
 
 // 一个任务 = 一个 thread:transport 负责在请求体带上 memory 参数
 // (Mastra agent.stream 的形状为 memory: { thread, resource },
@@ -19,9 +24,7 @@ export function createTaskTransport(
       const attachments = getAttachments?.() ?? [];
       let bodyMessages = messages;
       if (attachments.length > 0) {
-        const section = attachments
-          .map(a => `【附件:${a.name}】\n${a.text}`)
-          .join('\n\n');
+        const section = attachmentSection(attachments);
         bodyMessages = messages.map((m, i) => {
           if (i !== messages.length - 1 || m.role !== 'user') return m;
           return { ...m, parts: [...m.parts, { type: 'text' as const, text: `\n\n${section}` }] };

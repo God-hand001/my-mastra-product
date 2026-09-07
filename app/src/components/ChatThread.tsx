@@ -15,10 +15,32 @@ const MarkdownText = () => (
   <MarkdownTextPrimitive remarkPlugins={[remarkGfm]} className="chat-markdown" />
 );
 
+// 附件段落(由 transport 合并进消息)渲染为文档卡片,而不是原始文本
+// 标记格式:【附件:文件名(大小)】
+function UserText({ text }: TextMessagePartProps) {
+  const m = /^\n\n【附件:(.+?)（([^）]+)）】/.exec(text);
+  if (m) {
+    const name = m[1];
+    const size = m[2];
+    const ext = (name.split('.').pop() ?? '').toLowerCase();
+    const badge = ext === 'docx' ? 'W' : ext === 'xlsx' ? 'X' : ext === 'pdf' ? 'P' : '📄';
+    return (
+      <div className="msg-file-card">
+        <span className={`msg-file-icon file-${ext || 'default'}`}>{badge}</span>
+        <div className="msg-file-info">
+          <div className="msg-file-name">{name}</div>
+          <div className="msg-file-size">{ext.toUpperCase()} · {size}</div>
+        </div>
+      </div>
+    );
+  }
+  return <div className="msg-user-text">{text}</div>;
+}
+
 function UserMessage() {
   return (
     <div className="msg msg-user">
-      <MessagePrimitive.Parts components={{ Text: ({ text }: TextMessagePartProps) => <div className="msg-user-text">{text}</div> }} />
+      <MessagePrimitive.Parts components={{ Text: UserText }} />
     </div>
   );
 }

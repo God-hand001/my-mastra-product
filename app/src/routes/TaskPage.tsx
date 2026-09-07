@@ -43,12 +43,16 @@ export function TaskPage() {
     return <div className="task-loading">加载任务中…</div>;
   }
 
+  const initialAttachments =
+    (location.state as { attachments?: PickedAttachment[] } | null)?.attachments ?? [];
+
   return (
     <TaskChat
       key={id}
       taskId={id}
       history={boot.messages}
       pendingFirstMessage={initialMessage}
+      initialAttachments={initialAttachments}
     />
   );
 }
@@ -58,15 +62,18 @@ function TaskChat({
   taskId,
   history,
   pendingFirstMessage,
+  initialAttachments,
 }: {
   taskId: string;
   history: UIMessage[];
   pendingFirstMessage?: string;
+  initialAttachments?: PickedAttachment[];
 }) {
   // M2:任务内附件 —— 发送时由 transport 合并进消息,发送成功后清空
-  const [attachments, setAttachments] = useState<PickedAttachment[]>([]);
+  // initialAttachments:首页创建任务时带过来的附件(随首条消息注入)
+  const [attachments, setAttachments] = useState<PickedAttachment[]>(initialAttachments ?? []);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const attachmentsRef = useRef<PickedAttachment[]>([]);
+  const attachmentsRef = useRef<PickedAttachment[]>(attachments);
   attachmentsRef.current = attachments;
 
   const runtime = useChatRuntime({

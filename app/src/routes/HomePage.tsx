@@ -19,17 +19,13 @@ export function HomePage() {
   const [attachments, setAttachments] = useState<Attachment[]>([]);
 
   const handleSubmit = (text: string, list: Attachment[]) => {
-    // M2 F2:附件全文已在上传/选择时由后端提取,这里拼装进首条消息
-    // (前端中转全文方案,见 plan 模块交互)
-    const attachmentSections = list
-      .map(a => `【附件:${a.name}】\n${a.text}`)
-      .join('\n\n');
-    const firstMessage = attachmentSections
-      ? `${text.trim()}${text.trim() ? '\n\n' : ''}${attachmentSections}`
-      : text.trim();
-
-    const id = createTask(firstMessage);
-    navigate(`/task/${id}`, { state: { initialMessage: firstMessage } });
+    // M2 F2:附件全文已由后端提取;首条消息保持用户原文干净,
+    // 附件全文由 transport 在发送时合并(渲染层显示文档卡片)
+    const trimmed = text.trim();
+    const id = createTask(trimmed || '文档分析任务');
+    navigate(`/task/${id}`, {
+      state: { initialMessage: trimmed, attachments: list },
+    });
   };
 
   return (
