@@ -19,6 +19,133 @@ body {
   border-right: 1px solid #e5e6eb;
   background: #f7f8fa;
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-brand {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 4px 4px 16px;
+}
+
+.new-task-btn {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: #e8f3ff;
+  color: #1c7dff;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.new-task-btn:hover {
+  background: #d9ecff;
+}
+
+.sidebar-section {
+  margin-top: 20px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #86909c;
+  padding: 0 4px;
+}
+
+.task-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.task-list-empty {
+  color: #86909c;
+  font-size: 13px;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.task-list-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 2px;
+}
+
+.task-list-item:hover {
+  background: #eceef1;
+}
+
+.task-list-item.is-current {
+  background: #e8f3ff;
+}
+
+.task-list-item-title {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-list-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.task-list-item-time {
+  font-size: 12px;
+  color: #86909c;
+}
+
+.task-list-item-delete {
+  display: none;
+  border: none;
+  background: none;
+  color: #86909c;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.task-list-item-delete:hover {
+  color: #f53f3f;
+}
+
+.task-list-item:hover .task-list-item-delete {
+  display: inline;
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 4px 0;
+  border-top: 1px solid #e5e6eb;
+}
+
+.sidebar-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #d9ecff;
+  color: #1c7dff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sidebar-username {
+  font-size: 14px;
+}
+
+.sidebar-plan {
+  font-size: 12px;
+  color: #86909c;
 }
 
 .app-main {
