@@ -18,21 +18,22 @@ const MarkdownText = () => (
 // 附件段落(由 transport 合并进消息)渲染为独立的可下载文档卡片
 // 标记格式:【附件:文件名(大小)#网盘id】;标记后的附件全文不显示在气泡里
 function UserText({ text }: TextMessagePartProps) {
-  const re = /【附件:(.+?)(?:[（(]([^）)]+)[）)])?(?:#([0-9a-f-]{36}))?】/g;
+  const first = /【附件:(.+?)(?:[（(]([^）)]+)[）)])?(?:#([0-9a-f-]{36}))?】/.exec(text);
+  if (!first) {
+    // 普通用户消息:无附件标记,整段进气泡
+    return <div className="msg-user-text">{text}</div>;
+  }
+  // 有附件标记:气泡只保留标记之前的用户原文,标记后的附件全文隐藏
+  const before = text.slice(0, first.index).trim();
   const cards: { name: string; size?: string; id?: string }[] = [];
-  let head = '';
-  let last = 0;
+  const re = /【附件:(.+?)(?:[（(]([^）)]+)[）)])?(?:#([0-9a-f-]{36}))?】/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text))) {
-    head += text.slice(last, m.index);
-    last = re.lastIndex;
     cards.push({ name: m[1], size: m[2], id: m[3] });
   }
-
-  const trimmed = head.trim();
   return (
     <>
-      {trimmed && <div className="msg-user-text">{trimmed}</div>}
+      {before && <div className="msg-user-text">{before}</div>}
       {cards.map((c, i) => {
         const ext = (c.name.split('.').pop() ?? '').toLowerCase();
         const badge = ext === 'docx' ? 'W' : ext === 'xlsx' ? 'X' : ext === 'pdf' ? 'P' : '📄';
