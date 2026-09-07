@@ -64,6 +64,20 @@ export function TaskPage() {
       <ThreadConfigProvider
         config={{
           assistantMessage: { components: { ToolFallback: ToolCallCard } },
+          welcome: { message: '这是你的任务空间,描述一个任务开始吧' },
+          strings: {
+            composer: {
+              input: { placeholder: '继续追问或补充任务要求…' },
+              send: { tooltip: '发送' },
+              cancel: { tooltip: '停止' },
+            },
+            assistantMessage: {
+              reload: { tooltip: '重新生成' },
+              copy: { tooltip: '复制' },
+            },
+            userMessage: { edit: { tooltip: '编辑' } },
+            thread: { scrollToBottom: { tooltip: '回到底部' } },
+          },
         }}
       >
         <div className="task-thread-wrap">
