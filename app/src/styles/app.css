@@ -337,6 +337,179 @@ body {
   color: #f53f3f;
 }
 
+/* ===== 定时任务页 ===== */
+
+.sched-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.sched-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sched-title {
+  font-size: 20px;
+  margin: 0;
+}
+
+.sched-new-btn {
+  border: none;
+  border-radius: 10px;
+  background: #1c7dff;
+  color: #fff;
+  font-size: 13px;
+  padding: 9px 16px;
+  cursor: pointer;
+}
+
+.sched-form {
+  border: 1px solid #e5e6eb;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  background: #fafbfc;
+}
+
+.sched-form-title {
+  width: 100%;
+  border: 1px solid #e5e6eb;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.sched-form-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sched-form-select,
+.sched-form-time,
+.sched-form-monthday,
+.sched-form-cron {
+  border: 1px solid #e5e6eb;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  background: #fff;
+}
+
+.sched-form-cron {
+  flex: 1;
+  min-width: 160px;
+}
+
+.sched-form-weekdays {
+  display: flex;
+  gap: 4px;
+}
+
+.sched-wd {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #e5e6eb;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  color: #4e5969;
+}
+
+.sched-wd.is-on {
+  background: #1c7dff;
+  border-color: #1c7dff;
+  color: #fff;
+}
+
+.sched-form-submit {
+  border: none;
+  border-radius: 8px;
+  background: #1c7dff;
+  color: #fff;
+  font-size: 13px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.sched-form-submit:disabled {
+  background: #a9b0b8;
+}
+
+.sched-error {
+  color: #f53f3f;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.sched-empty {
+  color: #86909c;
+  text-align: center;
+  padding: 60px 0;
+  font-size: 14px;
+}
+
+.sched-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #e5e6eb;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+}
+
+.sched-item-main {
+  min-width: 0;
+}
+
+.sched-item-title {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sched-item-meta {
+  font-size: 12px;
+  color: #86909c;
+  margin-top: 4px;
+}
+
+.sched-item-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.sched-item-btn {
+  border: 1px solid #e5e6eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #4e5969;
+  font-size: 12px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.sched-item-btn:hover {
+  border-color: #1c7dff;
+  color: #1c7dff;
+}
+
+.sched-item-delete:hover {
+  border-color: #f53f3f;
+  color: #f53f3f;
+}
+
 .sidebar-section {
   margin-top: 20px;
   margin-bottom: 8px;
