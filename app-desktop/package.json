@@ -15,7 +15,10 @@
   "build": {
     "appId": "com.jlc.bangong",
     "productName": "嘉立创办公",
-    "files": ["main.js", "package.json"],
+    "files": [
+      "main.js",
+      "package.json"
+    ],
     "extraFiles": [
       {
         "from": "../app/dist",
@@ -23,11 +26,16 @@
       }
     ],
     "win": {
-      "target": ["nsis"]
+      "target": [
+        "nsis"
+      ]
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
+    },
+    "directories": {
+      "output": "release"
     }
   }
 }

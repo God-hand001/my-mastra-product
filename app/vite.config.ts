@@ -8,6 +8,10 @@ export default defineConfig({
   // base 相对路径:桌面壳以 file:// 加载 dist 产物(M6)
   base: './',
   plugins: [react()],
+  build: {
+    // 桌面壳以 file:// 加载:file:// 下动态 import 分包会被 CORS 拦截,故内联为单文件
+    rollupOptions: { output: { inlineDynamicImports: true } },
+  },
   server: {
     port: 5173,
     proxy: {
