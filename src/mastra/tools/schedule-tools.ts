@@ -1,5 +1,6 @@
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
+import { ensureThreadSubscription } from '../server/thread-subscriptions';
 
 export const startScheduleTool = createTool({
   id: 'start_schedule',
@@ -13,12 +14,17 @@ export const startScheduleTool = createTool({
       throw new Error('A threadId and resourceId are required to create a schedule.');
     }
 
+    const runtimeAgent = await mastra!.getAgent('agent');
+    await ensureThreadSubscription(runtimeAgent, agent.threadId, agent.resourceId);
     return mastra!.schedules.create({
       agentId: 'agent',
       cron: schedule,
       prompt,
       threadId: agent.threadId,
       resourceId: agent.resourceId,
+      signalType: 'user-message',
+      ifActive: { behavior: 'deliver' },
+      ifIdle: { behavior: 'wake' },
     });
   },
 });

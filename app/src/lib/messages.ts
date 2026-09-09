@@ -27,7 +27,9 @@ export interface MastraMessage {
 
 export function toUIMessages(list: MastraMessage[]): UIMessage[] {
   return list
-    .filter(m => m.role === 'user' || m.role === 'assistant')
+    // 定时任务触发后，Mastra 会先写入 role=signal；将其作为用户消息展示，
+    // 这样即使模型仍在后台执行，对话框也不会保持空白。
+    .filter(m => m.role === 'user' || m.role === 'assistant' || m.role === 'signal')
     .map(m => {
       const parts =
         typeof m.content === 'string'
@@ -57,7 +59,7 @@ export function toUIMessages(list: MastraMessage[]): UIMessage[] {
 
       return {
         id: m.id,
-        role: m.role as 'user' | 'assistant',
+        role: (m.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant',
         parts: uiParts,
       } as UIMessage;
     })

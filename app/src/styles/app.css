@@ -510,6 +510,39 @@ body {
   color: #f53f3f;
 }
 
+/* 启停开关(千问样式:圆角滑块) */
+.sched-switch {
+  width: 40px;
+  height: 22px;
+  border: none;
+  border-radius: 11px;
+  background: #d5d9de;
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s;
+}
+
+.sched-switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: left 0.15s;
+}
+
+.sched-switch.is-on {
+  background: #1c7dff;
+}
+
+.sched-switch.is-on .sched-switch-knob {
+  left: 20px;
+}
+
 .sidebar-section {
   margin-top: 20px;
   margin-bottom: 8px;

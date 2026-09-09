@@ -14,6 +14,7 @@ import {
   runScheduleNow,
   type ScheduleView,
 } from '../lib/schedulesClient';
+import { useTaskStore } from '../lib/taskStore';
 
 const PRESET_LABELS: Record<FrequencyPreset, string> = {
   daily: '每天',
@@ -24,6 +25,7 @@ const PRESET_LABELS: Record<FrequencyPreset, string> = {
 };
 
 function ScheduleForm({ onDone }: { onDone: () => void }) {
+  const { refresh: refreshTasks } = useTaskStore();
   const [title, setTitle] = useState('');
   const [preset, setPreset] = useState<FrequencyPreset>('daily');
   const [time, setTime] = useState('09:00');
@@ -47,6 +49,8 @@ function ScheduleForm({ onDone }: { onDone: () => void }) {
     setSubmitting(true);
     try {
       await createSchedule({ title: title.trim(), prompt: title.trim(), cron });
+      // 后端创建时同时生成关联线程，立即同步到左侧任务列表。
+      await refreshTasks();
       onDone();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -196,24 +200,35 @@ export function SchedulesPage() {
               </div>
               <div className="sched-item-actions">
                 {s.threadId && (
-                  <button className="sched-item-btn" onClick={() => navigate(`/task/${s.threadId}`)}>
-                    执行历史
+                  <button
+                    className="sched-item-btn"
+                    title="查看执行历史"
+                    onClick={() => navigate(`/task/${s.threadId}`)}
+                  >
+                    历史
                   </button>
                 )}
-                {s.status === 'paused' ? (
-                  <button className="sched-item-btn" onClick={() => void act(() => resumeSchedule(s.id))}>
-                    恢复
-                  </button>
-                ) : (
-                  <button className="sched-item-btn" onClick={() => void act(() => pauseSchedule(s.id))}>
-                    暂停
-                  </button>
-                )}
-                <button className="sched-item-btn" onClick={() => void act(() => runScheduleNow(s.id))}>
-                  立即执行
+                <button
+                  className="sched-item-btn"
+                  title="立即执行一次"
+                  onClick={() => void act(() => runScheduleNow(s.id))}
+                >
+                  ▶ 立即执行
+                </button>
+                <button
+                  className={`sched-switch${s.status === 'paused' ? '' : ' is-on'}`}
+                  title={s.status === 'paused' ? '恢复调度' : '暂停调度'}
+                  onClick={() =>
+                    void act(() =>
+                      s.status === 'paused' ? resumeSchedule(s.id) : pauseSchedule(s.id),
+                    )
+                  }
+                >
+                  <span className="sched-switch-knob" />
                 </button>
                 <button
                   className="sched-item-btn sched-item-delete"
+                  title="删除"
                   onClick={() => void act(() => removeSchedule(s.id))}
                 >
                   删除

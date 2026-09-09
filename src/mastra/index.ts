@@ -13,6 +13,7 @@ import { startScheduleTool, stopScheduleTool } from './tools/schedule-tools';
 import { chatRoute } from '@mastra/ai-sdk';
 import { driveRoutes } from './server/drive-routes';
 import { scheduleRoutes } from './server/schedule-routes';
+import { ensureThreadSubscription } from './server/thread-subscriptions';
 
 export const mastra = new Mastra({
   bundler: {
@@ -50,3 +51,21 @@ export const mastra = new Mastra({
     },
   }),
 });
+
+// 服务重启后恢复已有定时任务线程的订阅，避免旧任务只能“触发成功”却不执行模型。
+void (async () => {
+  try {
+    const runtimeAgent = await mastra.getAgent('agent');
+    const schedules = await mastra.schedules.list({ agentId: 'agent' });
+    await Promise.all(
+      schedules.map(schedule => {
+        const threaded = schedule as typeof schedule & { threadId?: string; resourceId?: string };
+        return threaded.threadId
+          ? ensureThreadSubscription(runtimeAgent, threaded.threadId, threaded.resourceId ?? 'local-user')
+          : undefined;
+      }),
+    );
+  } catch (error) {
+    console.error('恢复定时任务线程订阅失败', error);
+  }
+})();

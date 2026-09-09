@@ -3,7 +3,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import { AssistantRuntimeProvider } from '@assistant-ui/react';
 import { useChatRuntime } from '@assistant-ui/react-ai-sdk';
 import type { UIMessage } from 'ai';
-import { attachmentSection, createTaskTransport } from '../lib/transport';
+import { attachmentSection, createTaskTransport, LOCAL_USER_RESOURCE } from '../lib/transport';
 import { toUIMessages, type MastraMessage } from '../lib/messages';
 import { ChatThread } from '../components/ChatThread';
 import { AttachmentPicker } from '../components/AttachmentPicker';
@@ -21,10 +21,28 @@ export function TaskPage() {
 
   useEffect(() => {
     let alive = true;
-    setBoot(null);
-    (async () => {
+    let timer: ReturnType<typeof setInterval> | undefined;
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    let activeController: AbortController | undefined;
+
+    // 后台定时任务通过 Mastra signal 唤醒线程时，结果会先进入线程 stream。
+    // 订阅该 stream 后再刷新 memory，页面才能在任务对话中自动显示 assistant 回复。
+    const refreshSoon = () => {
+      if (refreshTimer) return;
+      refreshTimer = setTimeout(() => {
+        refreshTimer = undefined;
+        void loadMessages(false);
+      }, 300);
+    };
+
+    const loadMessages = async (showLoading: boolean) => {
+      if (showLoading) setBoot(null);
       try {
-        const res = await fetch(`/api/memory/threads/${id}/messages?agentId=${AGENT_ID}`);
+        // 线程同时按 agentId 和 resourceId 区分；定时任务使用 local-user，
+        // 缺少 resourceId 时接口会返回空消息，导致已执行的结果在页面不可见。
+        const res = await fetch(
+          `/api/memory/threads/${id}/messages?agentId=${AGENT_ID}&resourceId=${encodeURIComponent(LOCAL_USER_RESOURCE)}&page=0&perPage=100`,
+        );
         if (!res.ok) throw new Error(`加载历史失败: ${res.status}`);
         const data = (await res.json()) as { messages?: MastraMessage[] };
         if (alive) setBoot({ messages: toUIMessages(data.messages ?? []) });
@@ -33,9 +51,54 @@ export function TaskPage() {
         console.error('加载任务历史失败', err);
         if (alive) setBoot({ messages: [] });
       }
-    })();
+    };
+
+    void loadMessages(true);
+    // 定时任务在后台执行，页面没有对应的流式请求；轮询让结果像办公助手一样自动出现。
+    timer = setInterval(() => void loadMessages(false), 3_000);
+
+    // subscribe 接口是长连接：空闲时保持连接，定时 signal 到达后会推送事件。
+    // 即使某次连接被开发服务器/代理断开，也自动重连，避免必须手动刷新页面。
+    const subscribe = async () => {
+      while (alive) {
+        const controller = new AbortController();
+        activeController = controller;
+        try {
+          const response = await fetch(`/api/agents/${AGENT_ID}/threads/subscribe`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
+            body: JSON.stringify({ threadId: id, resourceId: LOCAL_USER_RESOURCE }),
+            signal: controller.signal,
+          });
+          if (!response.ok) throw new Error(`线程订阅失败: ${response.status}`);
+          if (!response.body) throw new Error('线程订阅未返回可读流');
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          while (alive) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            // 不依赖具体事件类型；收到任意非心跳数据都触发一次历史刷新。
+            const chunk = decoder.decode(value, { stream: true });
+            if (chunk.replace(/:\s*keep-alive\s*/g, '').trim()) refreshSoon();
+          }
+          reader.releaseLock();
+        } catch (err) {
+          if (alive) console.error('线程订阅失败', err);
+        } finally {
+          controller.abort();
+          if (activeController === controller) activeController = undefined;
+        }
+        if (alive) await new Promise(resolve => setTimeout(resolve, 1_000));
+      }
+    };
+    void subscribe();
+
     return () => {
       alive = false;
+      if (timer) clearInterval(timer);
+      if (refreshTimer) clearTimeout(refreshTimer);
+      activeController?.abort();
     };
   }, [id]);
 
@@ -48,7 +111,10 @@ export function TaskPage() {
 
   return (
     <TaskChat
-      key={id}
+      // 定时执行会异步写入消息；数量变化时重建 runtime，显示最新 assistant 回复。
+      // 后台执行完成后会新增 assistant 消息，数量变化时重建 runtime 以载入最新历史。
+      // 不把内容长度放进 key，避免用户正在编辑输入框时被流式更新重置草稿。
+      key={`${id}:${boot.messages.length}`}
       taskId={id}
       history={boot.messages}
       pendingFirstMessage={initialMessage}
