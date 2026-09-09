@@ -22,6 +22,12 @@ export const mastra = new Mastra({
   agents: { agent },
   tools: { startScheduleTool, stopScheduleTool },
   server: {
+    // 桌面壳(file://)与 5173 开发页直连 4111 时需要跨域许可(M6)
+    cors: {
+      origin: '*',
+      allowMethods: ['*'],
+      allowHeaders: ['*'],
+    },
     apiRoutes: [
       chatRoute({
         path: '/chat/:agentId',

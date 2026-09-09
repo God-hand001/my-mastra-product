@@ -1,4 +1,5 @@
 import { AssistantChatTransport } from '@assistant-ui/react-ai-sdk';
+import { API_BASE } from './apiBase';
 import { formatSize, type PickedAttachment } from './driveClient';
 
 // 所有任务属于同一个本地资源(plan:任务 = thread,resource 固定)
@@ -17,7 +18,7 @@ export function attachmentSection(attachments: PickedAttachment[]): string {
 // chatRoute 把 body 多余字段透传给 agent.stream,见 plan 模块交互)
 export function createTaskTransport(threadId: string) {
   return new AssistantChatTransport({
-    api: '/chat/agent',
+    api: `${API_BASE}/chat/agent`,
     prepareSendMessagesRequest: ({ messages }) => ({
       body: {
         messages,

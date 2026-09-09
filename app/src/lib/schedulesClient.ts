@@ -1,3 +1,5 @@
+import { API_BASE } from './apiBase';
+
 // 定时任务 HTTP 客户端(M3)
 
 export interface ScheduleView {
@@ -10,7 +12,7 @@ export interface ScheduleView {
   threadId?: string;
 }
 
-const API = '/schedules';
+const API = `${API_BASE}/schedules`;
 
 export async function listSchedules(): Promise<ScheduleView[]> {
   const res = await fetch(API);

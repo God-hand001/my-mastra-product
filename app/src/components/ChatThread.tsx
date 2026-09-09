@@ -1,4 +1,5 @@
 import { useState, type KeyboardEvent } from 'react';
+import { API_BASE } from '../lib/apiBase';
 import {
   AssistantRuntime,
   MessagePrimitive,
@@ -55,7 +56,7 @@ function UserText({ text }: TextMessagePartProps) {
           <a
             key={i}
             className="msg-file-card"
-            href={`/drive/files/${c.id}/download`}
+            href={`${API_BASE}/drive/files/${c.id}/download`}
             download={c.name}
             title="点击下载"
           >

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { API_BASE } from '../lib/apiBase';
 import { useLocation, useParams } from 'react-router-dom';
 import { AssistantRuntimeProvider } from '@assistant-ui/react';
 import { useChatRuntime } from '@assistant-ui/react-ai-sdk';
@@ -64,7 +65,7 @@ export function TaskPage() {
         const controller = new AbortController();
         activeController = controller;
         try {
-          const response = await fetch(`/api/agents/${AGENT_ID}/threads/subscribe`, {
+          const response = await fetch(`${API_BASE}/api/agents/${AGENT_ID}/threads/subscribe`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
             body: JSON.stringify({ threadId: id, resourceId: LOCAL_USER_RESOURCE }),

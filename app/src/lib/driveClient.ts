@@ -1,3 +1,5 @@
+import { API_BASE } from './apiBase';
+
 // 个人网盘 HTTP 客户端(M2)
 
 export interface DriveFileMeta {
@@ -15,7 +17,7 @@ export interface UploadResult {
   error?: string;
 }
 
-const API = '/drive/files';
+const API = `${API_BASE}/drive/files`;
 
 export async function uploadFile(file: File): Promise<UploadResult> {
   const form = new FormData();
