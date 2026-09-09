@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  cronToText,
-  buildCron,
-  type FrequencyPreset,
-} from '../lib/cron';
+import { cronToText } from '../lib/cron';
 import {
   createSchedule,
   listSchedules,
@@ -14,43 +10,48 @@ import {
   runScheduleNow,
   type ScheduleView,
 } from '../lib/schedulesClient';
-import { useTaskStore } from '../lib/taskStore';
 
-const PRESET_LABELS: Record<FrequencyPreset, string> = {
-  daily: '每天',
-  weekly: '每周',
-  workday: '工作日',
-  monthly: '每月',
-  custom: '自定义 cron',
+// 调度类型(对齐千问:一次性 / 固定间隔 / Cron 表达式)
+type ScheduleType = 'once' | 'interval' | 'cron';
+
+const TYPE_LABELS: Record<ScheduleType, string> = {
+  once: '一次性',
+  interval: '固定间隔',
+  cron: 'Cron 表达式',
 };
 
 function ScheduleForm({ onDone }: { onDone: () => void }) {
-  const { refresh: refreshTasks } = useTaskStore();
-  const [title, setTitle] = useState('');
-  const [preset, setPreset] = useState<FrequencyPreset>('daily');
-  const [time, setTime] = useState('09:00');
-  const [weekdays, setWeekdays] = useState<number[]>([1]);
-  const [monthDay, setMonthDay] = useState(1);
-  const [customCron, setCustomCron] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [type, setType] = useState<ScheduleType>('cron');
+  const [at, setAt] = useState('');
+  const [everyN, setEveryN] = useState(30);
+  const [everyUnit, setEveryUnit] = useState<'minutes' | 'hours'>('minutes');
+  const [cron, setCron] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
   const submit = async () => {
-    if (!title.trim()) {
-      setError('请填写任务描述');
+    if (!name.trim()) {
+      setError('请输入任务名称');
       return;
     }
-    const cron = buildCron({ preset, time, weekdays, monthDay, customCron });
-    if (!cron) {
-      setError(preset === 'weekly' ? '请选择星期' : preset === 'monthly' ? '请选择几号' : '请填写 cron 或时间');
+    if (!description.trim()) {
+      setError('请输入任务描述');
       return;
     }
     setError('');
     setSubmitting(true);
     try {
-      await createSchedule({ title: title.trim(), prompt: title.trim(), cron });
-      // 后端创建时同时生成关联线程，立即同步到左侧任务列表。
-      await refreshTasks();
+      await createSchedule({
+        name: name.trim(),
+        description: description.trim(),
+        type,
+        at: type === 'once' ? (at ? new Date(at).toISOString() : undefined) : undefined,
+        everyN: type === 'interval' ? everyN : undefined,
+        everyUnit: type === 'interval' ? everyUnit : undefined,
+        cron: type === 'cron' ? cron : undefined,
+      });
       onDone();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -61,74 +62,100 @@ function ScheduleForm({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="sched-form">
-      <input
-        className="sched-form-title"
-        placeholder="任务描述,如:每天早上汇报科技新闻"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-      />
+      <div className="sched-form-grid">
+        <label className="sched-field">
+          <span className="sched-field-label">任务名称</span>
+          <input
+            className="sched-input"
+            placeholder="请输入任务名称"
+            value={name}
+            onChange={e => setName(e.target.value)}
+          />
+        </label>
+      </div>
+      <label className="sched-field">
+        <span className="sched-field-label">任务描述</span>
+        <textarea
+          className="sched-input sched-textarea"
+          placeholder="描述要让 AI 做什么,如:汇报当前时间,并总结今天的一条科技新闻"
+          rows={2}
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+        />
+      </label>
       <div className="sched-form-row">
-        <select
-          className="sched-form-select"
-          value={preset}
-          onChange={e => setPreset(e.target.value as FrequencyPreset)}
-        >
-          {Object.entries(PRESET_LABELS).map(([v, label]) => (
-            <option key={v} value={v}>
-              {label}
-            </option>
-          ))}
-        </select>
-
-        {preset === 'weekly' && (
-          <div className="sched-form-weekdays">
-            {[1, 2, 3, 4, 5, 6, 0].map(d => (
-              <button
-                key={d}
-                type="button"
-                className={`sched-wd${weekdays.includes(d) ? ' is-on' : ''}`}
-                onClick={() =>
-                  setWeekdays(prev =>
-                    prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d],
-                  )
-                }
-              >
-                {['日', '一', '二', '三', '四', '五', '六'][d]}
-              </button>
+        <label className="sched-field">
+          <span className="sched-field-label">调度类型</span>
+          <select
+            className="sched-input"
+            value={type}
+            onChange={e => setType(e.target.value as ScheduleType)}
+          >
+            {Object.entries(TYPE_LABELS).map(([v, label]) => (
+              <option key={v} value={v}>
+                {label}
+              </option>
             ))}
-          </div>
+          </select>
+        </label>
+        {type === 'once' && (
+          <label className="sched-field">
+            <span className="sched-field-label">执行时间</span>
+            <input
+              type="datetime-local"
+              className="sched-input"
+              value={at}
+              onChange={e => setAt(e.target.value)}
+            />
+          </label>
         )}
-        {preset === 'monthly' && (
-          <input
-            type="number"
-            min={1}
-            max={31}
-            className="sched-form-monthday"
-            value={monthDay}
-            onChange={e => setMonthDay(Number(e.target.value))}
-          />
+        {type === 'interval' && (
+          <>
+            <label className="sched-field">
+              <span className="sched-field-label">执行间隔</span>
+              <input
+                type="number"
+                min={1}
+                className="sched-input"
+                style={{ width: 90 }}
+                value={everyN}
+                onChange={e => setEveryN(Number(e.target.value))}
+              />
+            </label>
+            <label className="sched-field">
+              <span className="sched-field-label">单位</span>
+              <select
+                className="sched-input"
+                value={everyUnit}
+                onChange={e => setEveryUnit(e.target.value as 'minutes' | 'hours')}
+              >
+                <option value="minutes">分钟</option>
+                <option value="hours">小时</option>
+              </select>
+            </label>
+          </>
         )}
-        {preset === 'custom' ? (
-          <input
-            className="sched-form-cron"
-            placeholder="cron 表达式,如 0 9 * * *"
-            value={customCron}
-            onChange={e => setCustomCron(e.target.value)}
-          />
-        ) : (
-          <input
-            type="time"
-            className="sched-form-time"
-            value={time}
-            onChange={e => setTime(e.target.value)}
-          />
+        {type === 'cron' && (
+          <label className="sched-field sched-field-grow">
+            <span className="sched-field-label">Cron 表达式</span>
+            <input
+              className="sched-input"
+              placeholder="0 9 * * 1-5"
+              value={cron}
+              onChange={e => setCron(e.target.value)}
+            />
+          </label>
         )}
-
-        <button type="button" className="sched-form-submit" disabled={submitting} onClick={() => void submit()}>
+      </div>
+      {error && <div className="sched-error">{error}</div>}
+      <div className="sched-form-actions">
+        <button type="button" className="sched-btn" onClick={onDone}>
+          取消
+        </button>
+        <button type="button" className="sched-btn-primary" disabled={submitting} onClick={() => void submit()}>
           {submitting ? '创建中…' : '创建'}
         </button>
       </div>
-      {error && <div className="sched-error">{error}</div>}
     </div>
   );
 }
@@ -192,7 +219,7 @@ export function SchedulesPage() {
               <div className="sched-item-main">
                 <div className="sched-item-title">{s.name || s.prompt}</div>
                 <div className="sched-item-meta">
-                  {cronToText(s.cron)} · {s.status === 'paused' ? '已暂停' : '运行中'}
+                  {cronToText(s.cron)} · {s.status === 'paused' ? '已停用' : '启用中'}
                   {s.status !== 'paused' && s.nextFireAt
                     ? ` · 下次 ${new Date(s.nextFireAt).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}`
                     : ''}
@@ -217,7 +244,7 @@ export function SchedulesPage() {
                 </button>
                 <button
                   className={`sched-switch${s.status === 'paused' ? '' : ' is-on'}`}
-                  title={s.status === 'paused' ? '恢复调度' : '暂停调度'}
+                  title={s.status === 'paused' ? '启用调度' : '停用调度'}
                   onClick={() =>
                     void act(() =>
                       s.status === 'paused' ? resumeSchedule(s.id) : pauseSchedule(s.id),

@@ -20,9 +20,13 @@ export async function listSchedules(): Promise<ScheduleView[]> {
 }
 
 export async function createSchedule(input: {
-  title: string;
-  prompt: string;
-  cron: string;
+  name: string;
+  description: string;
+  type: 'once' | 'interval' | 'cron';
+  at?: string;
+  everyN?: number;
+  everyUnit?: 'minutes' | 'hours';
+  cron?: string;
 }): Promise<ScheduleView> {
   const res = await fetch(API, {
     method: 'POST',

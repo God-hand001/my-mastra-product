@@ -20,31 +20,65 @@ export const scheduleRoutes = [
     method: 'POST',
     handler: async c => {
       const body = (await c.req.json().catch(() => null)) as {
-        title?: string;
-        prompt?: string;
+        name?: string;
+        description?: string;
+        type?: 'once' | 'interval' | 'cron';
+        at?: string;
+        everyN?: number;
+        everyUnit?: 'minutes' | 'hours';
         cron?: string;
       } | null;
-      const title = body?.title?.trim();
-      const prompt = body?.prompt?.trim();
-      const cron = body?.cron?.trim();
-      if (!title || !prompt || !cron) {
-        return c.json({ error: 'title、prompt、cron 均为必填' }, 400);
+      const name = body?.name?.trim();
+      const description = body?.description?.trim();
+      const type = body?.type ?? 'cron';
+      if (!name || !description) {
+        return c.json({ error: '任务名称与任务描述均为必填' }, 400);
       }
+
+      // 对齐千问:三种调度类型 → cron 表达��(一次性=指定日期时间;固定间隔=步进 cron)
+      let cron: string;
+      if (type === 'once') {
+        const at = body?.at ? new Date(body.at) : null;
+        if (!at || Number.isNaN(at.getTime())) {
+          return c.json({ error: '请选择执行时间' }, 400);
+        }
+        if (at.getTime() <= Date.now()) {
+          return c.json({ error: '计划时间必须是未来时间' }, 400);
+        }
+        cron = `${at.getMinutes()} ${at.getHours()} ${at.getDate()} ${at.getMonth() + 1} *`;
+      } else if (type === 'interval') {
+        const n = Number(body?.everyN);
+        const unit = body?.everyUnit ?? 'minutes';
+        if (!Number.isInteger(n) || n < 1) {
+          return c.json({ error: '请输入有效的间隔数值' }, 400);
+        }
+        if (unit === 'minutes') {
+          if (n > 59) return c.json({ error: '分钟间隔需在 1~59 之间(更大的间隔请用小时)' }, 400);
+          cron = `*/${n} * * * *`;
+        } else {
+          if (n > 23) return c.json({ error: '小时间隔需在 1~23 之间(更长的间隔请用 Cron 表达式)' }, 400);
+          cron = `0 */${n} * * *`;
+        }
+      } else {
+        cron = body?.cron?.trim() ?? '';
+        if (!cron) return c.json({ error: '请输入 Cron 表达式' }, 400);
+      }
+
       const mastra = c.get('mastra');
       try {
         const agent = await mastra.getAgent(AGENT_ID);
         const memory = await agent.getMemory();
         if (!memory) throw new Error('Agent memory is not configured');
         // F3:页面创建的定时任务绑定专属任务线程,执行历史沉淀其中
-        const thread = await memory.createThread({ resourceId: RESOURCE_ID, title });
+        const thread = await memory.createThread({ resourceId: RESOURCE_ID, title: name });
         await ensureThreadSubscription(agent, thread.id, RESOURCE_ID);
         const view = await mastra.schedules.create({
           agentId: AGENT_ID,
           cron,
-          prompt,
+          prompt: description,
           threadId: thread.id,
           resourceId: RESOURCE_ID,
-          name: title,
+          name,
           // 定时请求属于用户委托的任务，按用户消息进入线程，便于历史记录直接展示。
           signalType: 'user-message',
           // 显式指定投递行为:线程空闲时唤醒 agent 生成(spec:触发结果写入线程)
