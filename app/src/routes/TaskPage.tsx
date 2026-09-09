@@ -42,7 +42,7 @@ export function TaskPage() {
         // 线程同时按 agentId 和 resourceId 区分；定时任务使用 local-user，
         // 缺少 resourceId 时接口会返回空消息，导致已执行的结果在页面不可见。
         const res = await fetch(
-          `/api/memory/threads/${id}/messages?agentId=${AGENT_ID}&resourceId=${encodeURIComponent(LOCAL_USER_RESOURCE)}&page=0&perPage=100`,
+          `${API_BASE}/api/memory/threads/${id}/messages?agentId=${AGENT_ID}&resourceId=${encodeURIComponent(LOCAL_USER_RESOURCE)}&page=0&perPage=100`,
         );
         if (!res.ok) throw new Error(`加载历史失败: ${res.status}`);
         const data = (await res.json()) as { messages?: MastraMessage[] };

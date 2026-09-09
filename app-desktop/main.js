@@ -30,6 +30,8 @@ function registerApiProtocol() {
         method: req.method,
         headers,
         body: ['GET', 'HEAD'].includes(req.method) ? undefined : req.body,
+        // 转发流式请求体(如线程订阅 SSE)时 undici 要求显式 duplex
+        ...(req.body ? { duplex: 'half' } : {}),
       });
       const out = new Headers(res.headers);
       out.set('access-control-allow-origin', '*');
@@ -47,7 +49,7 @@ function registerApiProtocol() {
 let win;
 
 function backendUp() {
-  return fetch(`${API_BASE}/api/agents`, { signal: AbortSignal.timeout(1500) })
+  return fetch(`${API_ORIGIN}/api/agents`, { signal: AbortSignal.timeout(1500) })
     .then(res => res.ok)
     .catch(() => false);
 }
