@@ -1,11 +1,48 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, protocol } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 
 // M6 轻量壳:--dev 加载 Vite(5173,热更新);否则加载 app/dist 构建产物
 // 后端(4111)由用户手动启动;未启动时展示提示页(N1)
+// 渲染层 API 一律走 appapi:// 自定义协议 → 主进程转发到 4111
+// (file:// 渲染进程直连 http://localhost 会被 Chromium PNA/CORS 间歇拦截,故用协议通道根治)
 const DEV = process.argv.includes('--dev');
-const API_BASE = 'http://localhost:4111';
+const API_ORIGIN = 'http://localhost:4111';
+
+// 必须在 app ready 前注册
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'appapi',
+    privileges: { standard: true, supportFetchAPI: true, stream: true, corsEnabled: true, secure: true },
+  },
+]);
+
+function registerApiProtocol() {
+  protocol.handle('appapi', async req => {
+    try {
+      const u = new URL(req.url);
+      const target = `${API_ORIGIN}${u.pathname}${u.search}`;
+      const headers = {};
+      for (const [k, v] of req.headers) headers[k] = v;
+      delete headers.origin;
+      delete headers.referer;
+      const res = await fetch(target, {
+        method: req.method,
+        headers,
+        body: ['GET', 'HEAD'].includes(req.method) ? undefined : req.body,
+      });
+      const out = new Headers(res.headers);
+      out.set('access-control-allow-origin', '*');
+      return new Response(res.body, { status: res.status, statusText: res.statusText, headers: out });
+    } catch (err) {
+      console.log('[appapi-error]', req.url, err?.message ?? err);
+      return new Response(JSON.stringify({ error: `网关请求失败: ${err?.message ?? err}` }), {
+        status: 502,
+        headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' },
+      });
+    }
+  });
+}
 
 let win;
 
@@ -73,11 +110,29 @@ function createWindow() {
     width: 1280,
     height: 820,
     title: '嘉立创办公',
-    webPreferences: { contextIsolation: true },
+    webPreferences: {
+      contextIsolation: true,
+      // 本地壳:file:// → http://localhost 受 Chromium 私有网络访问保护(PNA)拦截,
+      // 纯本地单机应用关闭该检查以放行 API 请求(壳内只加载本地构建产物)
+      webSecurity: false,
+    },
+  });
+  // 渲染进程报错转发到主进程 stdout(桌面端排障用)
+  win.webContents.on('console-message', (_e, level, message) => {
+    if (level >= 2) console.log('[renderer]', message);
+  });
+  win.webContents.on('did-fail-load', (_e, code, desc, url) => {
+    console.log('[did-fail-load]', code, desc, url);
+  });
+  win.webContents.session.webRequest.onErrorOccurred(details => {
+    console.log('[req-error]', details.error, details.url);
   });
   loadApp();
   win.on('page-title-updated', e => e.preventDefault());
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  registerApiProtocol();
+  createWindow();
+});
 app.on('window-all-closed', () => app.quit());
