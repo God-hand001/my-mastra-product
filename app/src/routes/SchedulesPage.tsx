@@ -10,6 +10,7 @@ import {
   runScheduleNow,
   type ScheduleView,
 } from '../lib/schedulesClient';
+import { useTaskStore } from '../lib/taskStore';
 
 // 调度类型(对齐千问:一次性 / 固定间隔 / Cron 表达式)
 type ScheduleType = 'once' | 'interval' | 'cron';
@@ -173,6 +174,7 @@ function ScheduleForm({ onDone }: { onDone: () => void }) {
 
 export function SchedulesPage() {
   const navigate = useNavigate();
+  const { refresh: refreshTasks } = useTaskStore();
   const [schedules, setSchedules] = useState<ScheduleView[] | null>(null);
   const [error, setError] = useState('');
   const [formOpen, setFormOpen] = useState(false);
@@ -214,6 +216,8 @@ export function SchedulesPage() {
           onDone={() => {
             setFormOpen(false);
             refresh();
+            // 创建的定时任务绑定了专属任务线程,同步刷新左侧「最近任务」
+            void refreshTasks();
           }}
         />
       )}
