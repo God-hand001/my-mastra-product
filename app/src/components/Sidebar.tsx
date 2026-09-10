@@ -84,6 +84,7 @@ function ProjectItem({
   onEdit: (p: Project) => void;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const linkedTasks = links
     .filter(l => l.projectId === project.id)
@@ -96,8 +97,10 @@ function ProjectItem({
     <div className="project-item-wrap">
       <div
         className={`project-item${selectedId === project.id ? ' is-current' : ''}`}
-        onClick={() => onSelect(project.id)}
+        onClick={() => setCollapsed(c => !c)}
+        title={collapsed ? '展开项目任务' : '折叠项目任务'}
       >
+        <span className={`project-item-chevron${collapsed ? ' is-collapsed' : ''}`}>▾</span>
         <span className="project-item-name">📁 {project.name}</span>
         <span className="project-item-actions" onClick={e => e.stopPropagation()}>
           <button
@@ -166,11 +169,13 @@ function ProjectItem({
           </>
         )}
       </div>
-      <div className="project-tasks">
-        {linkedTasks.map(t => (
-          <TaskListItem key={t.id} task={t} indent />
-        ))}
-      </div>
+      {!collapsed && (
+        <div className="project-tasks">
+          {linkedTasks.map(t => (
+            <TaskListItem key={t.id} task={t} indent />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

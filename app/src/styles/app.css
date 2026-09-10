@@ -1441,11 +1441,11 @@ body {
 .project-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 8px 10px;
   border-radius: 10px;
   cursor: pointer;
+  transition: background 0.12s;
 }
 
 .project-item:hover {
@@ -1456,8 +1456,22 @@ body {
   background: #e8f3ff;
 }
 
+.project-item-chevron {
+  font-size: 10px;
+  color: #86909c;
+  transition: transform 0.15s;
+  flex-shrink: 0;
+  width: 12px;
+  text-align: center;
+}
+
+.project-item-chevron.is-collapsed {
+  transform: rotate(-90deg);
+}
+
 .project-item-name {
   font-size: 13px;
+  font-weight: 500;
   color: #1f2329;
   white-space: nowrap;
   overflow: hidden;
@@ -1494,8 +1508,24 @@ body {
 }
 
 .project-tasks {
+  margin: 2px 0 6px 16px;
+  padding-left: 10px;
+  border-left: 1px solid #eceef1;
   display: flex;
   flex-direction: column;
+  gap: 2px;
+  animation: projTasksIn 0.18s ease;
+}
+
+@keyframes projTasksIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .task-list-item.is-indent {
