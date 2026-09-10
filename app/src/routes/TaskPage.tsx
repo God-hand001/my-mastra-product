@@ -10,6 +10,7 @@ import { toUIMessages, type MastraMessage } from '../lib/messages';
 import { ChatThread } from '../components/ChatThread';
 import { AttachmentPicker } from '../components/AttachmentPicker';
 import type { PickedAttachment } from '../lib/driveClient';
+import { linkThread, type Project } from '../lib/projectsClient';
 
 const AGENT_ID = 'agent';
 
@@ -110,6 +111,7 @@ export function TaskPage() {
 
   const initialAttachments =
     (location.state as { attachments?: PickedAttachment[] } | null)?.attachments ?? [];
+  const project = (location.state as { project?: Project } | null)?.project;
 
   return (
     <TaskChat
@@ -121,6 +123,7 @@ export function TaskPage() {
       history={boot.messages}
       pendingFirstMessage={initialMessage}
       initialAttachments={initialAttachments}
+      project={project}
     />
   );
 }
@@ -131,11 +134,13 @@ function TaskChat({
   history,
   pendingFirstMessage,
   initialAttachments,
+  project,
 }: {
   taskId: string;
   history: UIMessage[];
   pendingFirstMessage?: string;
   initialAttachments?: PickedAttachment[];
+  project?: Project;
 }) {
   // M2:任务内附件 —— 发送时拼进消息本体(实时即显卡片),发送后清空
   // initialAttachments:首页创建任务时带过来的附件(随首条消息注入)
@@ -147,7 +152,10 @@ function TaskChat({
   modelRef.current = model;
 
   const runtime = useChatRuntime({
-    transport: createTaskTransport(taskId, () => modelRef.current),
+    transport: createTaskTransport(taskId, () => ({
+      model: modelRef.current,
+      ...(project ? { projectDir: project.dir, projectName: project.name } : {}),
+    })),
     id: taskId,
     messages: history,
   });
@@ -172,6 +180,14 @@ function TaskChat({
     runtime.thread.append((pendingFirstMessage ?? '') + section);
     setAttachments([]);
   }, [runtime, pendingFirstMessage, initialAttachments, history.length]);
+
+  // H0:首次消息成功后绑定线程 ↔ 项目(幂等,remount 重复触发无副作用)
+  const linkedRef = useRef(false);
+  useEffect(() => {
+    if (linkedRef.current || !project || history.length === 0) return;
+    linkedRef.current = true;
+    linkThread(taskId, project.id).catch(err => console.error('绑定项目失败', err));
+  }, [project, history.length, taskId]);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>

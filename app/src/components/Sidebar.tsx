@@ -1,4 +1,8 @@
+import { useState } from 'react';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
+import { isDesktop } from '../lib/desktop';
+import { type Project } from '../lib/projectsClient';
+import { ProjectModal } from './ProjectModal';
 import { useTaskStore } from '../lib/taskStore';
 import type { TaskThread } from '../lib/agentClient';
 
@@ -47,9 +51,14 @@ function TaskListItem({ task }: { task: TaskThread }) {
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ projects }: { projects: Project[] }) {
   const navigate = useNavigate();
-  const { tasks, loading } = useTaskStore();
+  const { tasks, loading, links, selectedProject, setSelectedProject } = useTaskStore();
+  const [projectModalOpen, setProjectModalOpen] = useState(false);
+  // H0:项目功能仅桌面端;选中项目时最近任务按绑定关系过滤
+  const visibleTasks = selectedProject
+    ? tasks.filter(t => links.some(l => l.threadId === t.id && l.projectId === selectedProject))
+    : tasks;
 
   return (
     <aside className="app-sidebar">
@@ -67,16 +76,61 @@ export function Sidebar() {
         ⏰ 定时任务
       </button>
 
-      <div className="sidebar-section">最近任务</div>
+      {isDesktop() && (
+        <>
+          <div className="sidebar-section-row">
+            <span className="sidebar-section">项目</span>
+            <button
+              className="sidebar-section-add"
+              title="新建项目"
+              onClick={() => setProjectModalOpen(true)}
+            >
+              +
+            </button>
+          </div>
+          <div className="project-list">
+            {projects.length === 0 ? (
+              <div className="task-list-empty">暂无项目</div>
+            ) : (
+              projects.map(p => (
+                <div
+                  key={p.id}
+                  className={`project-item${selectedProject === p.id ? ' is-current' : ''}`}
+                  title={p.dir || p.name}
+                  onClick={() =>
+                    setSelectedProject(selectedProject === p.id ? null : p.id)
+                  }
+                >
+                  <span className="project-item-name">📁 {p.name}</span>
+                </div>
+              ))
+            )}
+          </div>
+          <div className="sidebar-section">最近任务{selectedProject ? '(本项目)' : ''}</div>
+        </>
+      )}
+      {!isDesktop() && <div className="sidebar-section">最近任务</div>}
       <div className="task-list">
         {loading ? (
           <div className="task-list-empty">加载中…</div>
-        ) : tasks.length === 0 ? (
-          <div className="task-list-empty">还未创建过任务</div>
+        ) : visibleTasks.length === 0 ? (
+          <div className="task-list-empty">
+            {selectedProject ? '该项目下暂无任务' : '还未创建过任务'}
+          </div>
         ) : (
-          tasks.map(task => <TaskListItem key={task.id} task={task} />)
+          visibleTasks.map(task => <TaskListItem key={task.id} task={task} />)
         )}
       </div>
+
+      {projectModalOpen && (
+        <ProjectModal
+          onClose={() => setProjectModalOpen(false)}
+          onCreated={() => {
+            setProjectModalOpen(false);
+            window.dispatchEvent(new CustomEvent('h0-projects-changed'));
+          }}
+        />
+      )}
 
       <div className="sidebar-footer">
         <div className="sidebar-avatar">g</div>

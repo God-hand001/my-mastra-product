@@ -1279,3 +1279,156 @@ body {
   align-items: center;
   gap: 10px;
 }
+
+/* ===== 项目系统(H0) ===== */
+
+.sidebar-section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  margin-bottom: 4px;
+  padding: 0 4px;
+}
+
+.sidebar-section-row .sidebar-section {
+  margin-top: 0;
+}
+
+.sidebar-section-add {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #4e5969;
+  font-size: 14px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.sidebar-section-add:hover {
+  background: #e8f3ff;
+  color: #1c7dff;
+}
+
+.project-list {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6px;
+}
+
+.project-item {
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 2px;
+}
+
+.project-item:hover {
+  background: #eceef1;
+}
+
+.project-item.is-current {
+  background: #e8f3ff;
+}
+
+.project-item-name {
+  font-size: 13px;
+  color: #1f2329;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 新建项目弹窗 */
+.project-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 420px;
+  max-width: 92vw;
+  padding: 22px;
+  box-shadow: 0 12px 40px rgba(31, 35, 41, 0.2);
+}
+
+.project-modal-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.project-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.project-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.project-field-label {
+  font-size: 13px;
+  color: #1f2329;
+  font-weight: 500;
+}
+
+.project-dir-btn {
+  border: 1px solid #e5e6eb;
+  border-radius: 10px;
+  background: #fff;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #4e5969;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.project-dir-btn:hover {
+  border-color: #1c7dff;
+  color: #1c7dff;
+}
+
+.project-dir-value {
+  color: #1f2329;
+  word-break: break-all;
+}
+
+.project-dir-hint {
+  font-size: 12px;
+  color: #86909c;
+}
+
+.project-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* 首页当前项目选择器 */
+.home-project-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.home-project-label {
+  font-size: 13px;
+  color: #4e5969;
+}
+
+.home-project-select {
+  border: 1px solid #e5e6eb;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  background: #fff;
+  color: #1f2329;
+  cursor: pointer;
+}

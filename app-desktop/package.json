@@ -36,6 +36,9 @@
     },
     "directories": {
       "output": "release"
+    },
+    "extraMetadata": {
+      "main": "main.js"
     }
   }
 }

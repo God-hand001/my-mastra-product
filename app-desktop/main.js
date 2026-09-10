@@ -1,4 +1,4 @@
-const { app, BrowserWindow, protocol } = require('electron');
+const { app, BrowserWindow, protocol, ipcMain, dialog } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 
@@ -114,6 +114,8 @@ function createWindow() {
     title: '嘉立创办公',
     webPreferences: {
       contextIsolation: true,
+      // H0:目录选择桥(preload → ipcMain)
+      preload: path.join(__dirname, 'preload.js'),
       // 本地壳:file:// → http://localhost 受 Chromium 私有网络访问保护(PNA)拦截,
       // 纯本地单机应用关闭该检查以放行 API 请求(壳内只加载本地构建产物)
       webSecurity: false,
@@ -134,6 +136,15 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // H0:原生文件夹选择框(桌面端新建项目用)
+  ipcMain.handle('select-directory', async () => {
+    const result = await dialog.showOpenDialog(win, {
+      properties: ['openDirectory'],
+      title: '选择工作目录',
+    });
+    if (result.canceled || result.filePaths.length === 0) return null;
+    return result.filePaths[0];
+  });
   registerApiProtocol();
   createWindow();
 });

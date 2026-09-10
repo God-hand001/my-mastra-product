@@ -4,6 +4,8 @@ import { TaskInput } from '../components/TaskInput';
 import type { Attachment } from '../components/AttachmentBar';
 import { useTaskStore } from '../lib/taskStore';
 import { loadSelectedModel, saveSelectedModel } from '../lib/models';
+import { isDesktop } from '../lib/desktop';
+import type { Project } from '../lib/projectsClient';
 
 function greeting(): string {
   const hour = new Date().getHours();
@@ -14,9 +16,9 @@ function greeting(): string {
   return '晚上好';
 }
 
-export function HomePage() {
+export function HomePage({ projects }: { projects: Project[] }) {
   const navigate = useNavigate();
-  const { createTask } = useTaskStore();
+  const { createTask, selectedProject, setSelectedProject } = useTaskStore();
   const [model, setModel] = useState(loadSelectedModel());
   const [attachments, setAttachments] = useState<Attachment[]>([]);
 
@@ -38,6 +40,23 @@ export function HomePage() {
           <br />
           准备好创建点什么了吗?
         </h1>
+        {isDesktop() && projects.length > 0 && (
+          <div className="home-project-row">
+            <span className="home-project-label">当前项目</span>
+            <select
+              className="home-project-select"
+              value={selectedProject ?? ''}
+              onChange={e => setSelectedProject(e.target.value || null)}
+            >
+              <option value="">无项目</option>
+              {projects.map(p => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <TaskInput
           onSubmit={handleSubmit}
           attachments={attachments}

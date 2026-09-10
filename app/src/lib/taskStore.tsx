@@ -8,12 +8,17 @@ import {
   type ReactNode,
 } from 'react';
 import { deleteThread, listThreads, type TaskThread } from './agentClient';
+import { getLinks, type ThreadLink } from './projectsClient';
 import { LOCAL_USER_RESOURCE, newTaskId } from './transport';
 
 // 轻量任务状态(plan:不引 zustand,用 React context)
 // 任务 = thread;排序按最近活跃(updatedAt 倒序)
 
 interface TaskStoreValue {
+  links: ThreadLink[];
+  selectedProject: string | null;
+  setSelectedProject: (id: string | null) => void;
+  setLinks: (links: ThreadLink[]) => void;
   tasks: TaskThread[];
   loading: boolean;
   currentTaskId: string | null;
@@ -30,6 +35,8 @@ export function TaskStoreProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<TaskThread[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  const [links, setLinks] = useState<ThreadLink[]>([]);
+  const [selectedProject, setSelectedProject] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     try {
@@ -79,8 +86,8 @@ export function TaskStoreProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const value = useMemo(
-    () => ({ tasks, loading, currentTaskId, setCurrentTaskId, refresh, createTask, removeTask }),
-    [tasks, loading, currentTaskId, refresh, createTask, removeTask],
+    () => ({ tasks, loading, currentTaskId, setCurrentTaskId, refresh, createTask, removeTask, links, selectedProject, setSelectedProject, setLinks }),
+    [tasks, loading, currentTaskId, refresh, createTask, removeTask, links, selectedProject],
   );
 
   return <TaskStoreContext.Provider value={value}>{children}</TaskStoreContext.Provider>;
