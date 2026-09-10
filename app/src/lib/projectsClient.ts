@@ -36,6 +36,17 @@ export async function createProject(input: { name: string; dir?: string }): Prom
   return data as Project;
 }
 
+export async function updateProject(id: string, patch: { name?: string; dir?: string }): Promise<Project> {
+  const res = await fetch(`${API}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(patch),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error ?? `更新失败(${res.status})`);
+  return data as Project;
+}
+
 export async function removeProject(id: string): Promise<void> {
   const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error(`删除失败(${res.status})`);
@@ -63,4 +74,9 @@ export async function getLinks(): Promise<ThreadLink[]> {
 // 选择工作目录:桌面端弹原生选择框;浏览器无此能力(返回 null)
 export async function selectDirectory(): Promise<string | null> {
   return (await desktopBridge()?.selectDirectory()) ?? null;
+}
+
+// 在系统文件管理器中打开项目文件夹(桌面端)
+export async function openPath(dir: string): Promise<void> {
+  await desktopBridge()?.openPath(dir);
 }

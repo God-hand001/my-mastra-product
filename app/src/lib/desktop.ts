@@ -1,6 +1,7 @@
 // 桌面壳环境检测(H0:项目功能仅桌面端提供)
 export interface JlcDesktopBridge {
   selectDirectory: () => Promise<string | null>;
+  openPath: (dir: string) => Promise<string>;
 }
 
 export function isDesktop(): boolean {

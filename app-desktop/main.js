@@ -1,4 +1,4 @@
-const { app, BrowserWindow, protocol, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, protocol, ipcMain, dialog, shell } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 
@@ -136,6 +136,10 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // H0:打开项目文件夹
+  ipcMain.handle('open-path', async (_e, dir) => {
+    return shell.openPath(dir);
+  });
   // H0:原生文件夹选择框(桌面端新建项目用)
   ipcMain.handle('select-directory', async () => {
     const result = await dialog.showOpenDialog(win, {

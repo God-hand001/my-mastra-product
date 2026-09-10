@@ -1,16 +1,19 @@
 import { useState } from 'react';
-import { createProject, selectDirectory } from '../lib/projectsClient';
+import { createProject, selectDirectory, updateProject, type Project } from '../lib/projectsClient';
 
-// 新建项目弹窗(H0,对齐千问:项目名称 + 工作目录选填)
+// 新建/编辑项目弹窗(H0,对齐千问:项目名称 + 工作目录选填)
 export function ProjectModal({
+  initial,
   onClose,
-  onCreated,
+  onSaved,
 }: {
+  initial?: Project | null;
   onClose: () => void;
-  onCreated: () => void;
+  onSaved: () => void;
 }) {
-  const [name, setName] = useState('');
-  const [dir, setDir] = useState('');
+  const editing = !!initial;
+  const [name, setName] = useState(initial?.name ?? '');
+  const [dir, setDir] = useState(initial?.dir ?? '');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -27,8 +30,12 @@ export function ProjectModal({
     setError('');
     setSubmitting(true);
     try {
-      await createProject({ name: name.trim(), dir: dir.trim() || undefined });
-      onCreated();
+      if (editing && initial) {
+        await updateProject(initial.id, { name: name.trim(), dir: dir.trim() || undefined });
+      } else {
+        await createProject({ name: name.trim(), dir: dir.trim() || undefined });
+      }
+      onSaved();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
       setSubmitting(false);
@@ -39,7 +46,7 @@ export function ProjectModal({
     <div className="picker-mask" onClick={onClose}>
       <div className="project-modal" onClick={e => e.stopPropagation()}>
         <div className="project-modal-title-row">
-          <span className="project-modal-title">新建个人项目</span>
+          <span className="project-modal-title">{editing ? '编辑项目' : '新建个人项目'}</span>
           <button className="picker-close" onClick={onClose}>
             ×
           </button>
@@ -76,7 +83,7 @@ export function ProjectModal({
             disabled={submitting || !name.trim()}
             onClick={() => void submit()}
           >
-            {submitting ? '创建中…' : '新建项目'}
+            {submitting ? '保存中…' : editing ? '保存' : '新建项目'}
           </button>
         </div>
       </div>

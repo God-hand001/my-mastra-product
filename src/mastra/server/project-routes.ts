@@ -5,6 +5,7 @@ import {
   getLinks,
   linkThread,
   listProjects,
+  updateProject,
 } from '../services/project-store';
 
 // 项目系统 HTTP 路由(H0)
@@ -26,6 +27,26 @@ export const projectRoutes = [
       try {
         const project = await createProject({
           name: body?.name ?? '',
+          dir: body?.dir,
+        });
+        return c.json(project);
+      } catch (err) {
+        const reason = err instanceof Error ? err.message : String(err);
+        return c.json({ error: reason }, 400);
+      }
+    },
+  }),
+
+  registerApiRoute('/projects/:id', {
+    method: 'PUT',
+    handler: async c => {
+      const body = (await c.req.json().catch(() => null)) as {
+        name?: string;
+        dir?: string;
+      } | null;
+      try {
+        const project = await updateProject(c.req.param('id'), {
+          name: body?.name,
           dir: body?.dir,
         });
         return c.json(project);

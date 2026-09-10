@@ -21,6 +21,7 @@ export function HomePage({ projects }: { projects: Project[] }) {
   const { createTask, selectedProject, setSelectedProject } = useTaskStore();
   const [model, setModel] = useState(loadSelectedModel());
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const selected = selectedProject ? projects.find(p => p.id === selectedProject) : undefined;
 
   const handleSubmit = (text: string, list: Attachment[]) => {
     // M2 F2:附件全文已由后端提取;首条消息保持用户原文干净,
@@ -28,7 +29,12 @@ export function HomePage({ projects }: { projects: Project[] }) {
     const trimmed = text.trim();
     const id = createTask(trimmed || '文档分析任务');
     navigate(`/task/${id}`, {
-      state: { initialMessage: trimmed, attachments: list },
+      state: {
+        initialMessage: trimmed,
+        attachments: list,
+        // H0:任务归入当前所选项目( TaskPage 首条消息后绑定 )
+        project: selected ? { id: selected.id, name: selected.name, dir: selected.dir } : undefined,
+      },
     });
   };
 
@@ -40,23 +46,6 @@ export function HomePage({ projects }: { projects: Project[] }) {
           <br />
           准备好创建点什么了吗?
         </h1>
-        {isDesktop() && projects.length > 0 && (
-          <div className="home-project-row">
-            <span className="home-project-label">当前项目</span>
-            <select
-              className="home-project-select"
-              value={selectedProject ?? ''}
-              onChange={e => setSelectedProject(e.target.value || null)}
-            >
-              <option value="">无项目</option>
-              {projects.map(p => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
         <TaskInput
           onSubmit={handleSubmit}
           attachments={attachments}
@@ -67,6 +56,27 @@ export function HomePage({ projects }: { projects: Project[] }) {
             saveSelectedModel(id);
           }}
         />
+        {/* H0:当前项目 chip(输入框下方,千问形态;仅桌面端且有项目时显示) */}
+        {isDesktop() && projects.length > 0 && (
+          <div className="home-project-chip-row">
+            <span className={`home-project-chip${selected ? ' is-active' : ''}`}>
+              📁 {selected ? selected.name : '选择项目'}
+              <span className="home-project-chev">▾</span>
+              <select
+                className="home-project-select"
+                value={selectedProject ?? ''}
+                onChange={e => setSelectedProject(e.target.value || null)}
+              >
+                <option value="">无项目</option>
+                {projects.map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

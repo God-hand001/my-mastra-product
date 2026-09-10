@@ -67,6 +67,26 @@ export async function createProject(input: { name: string; dir?: string }): Prom
   return project;
 }
 
+export async function updateProject(
+  id: string,
+  patch: { name?: string; dir?: string },
+): Promise<Project> {
+  const store = await loadStore();
+  const existing = store.projects.find(p => p.id === id);
+  if (!existing) throw new Error(`项目不存在: ${id}`);
+  if (patch.dir) {
+    const normalized = path.resolve(patch.dir).toLowerCase();
+    const dup = store.projects.find(
+      p => p.id !== id && p.dir && path.resolve(p.dir).toLowerCase() === normalized,
+    );
+    if (dup) throw new Error(`该目录已注册为项目「${dup.name}」`);
+  }
+  existing.name = patch.name?.trim() || existing.name;
+  existing.dir = patch.dir?.trim() ?? existing.dir;
+  await saveStore(store);
+  return existing;
+}
+
 export async function deleteProject(id: string): Promise<void> {
   const store = await loadStore();
   await saveStore({

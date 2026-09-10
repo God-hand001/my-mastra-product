@@ -1432,3 +1432,152 @@ body {
   color: #1f2329;
   cursor: pointer;
 }
+
+/* 项目节点(侧栏,千问形态) */
+.project-item-wrap {
+  position: relative;
+}
+
+.project-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.project-item:hover {
+  background: #eceef1;
+}
+
+.project-item.is-current {
+  background: #e8f3ff;
+}
+
+.project-item-name {
+  font-size: 13px;
+  color: #1f2329;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+.project-item-actions {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.project-item:hover .project-item-actions {
+  display: inline-flex;
+}
+
+.project-item-btn {
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  padding: 2px 5px;
+  font-size: 12px;
+  color: #4e5969;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.project-item-btn:hover {
+  background: #d9ecff;
+  color: #1c7dff;
+}
+
+.project-tasks {
+  display: flex;
+  flex-direction: column;
+}
+
+.task-list-item.is-indent {
+  margin-left: 20px;
+}
+
+/* 项目 ⋯ 菜单 */
+.project-menu {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e6eb;
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 180px;
+  box-shadow: 0 8px 28px rgba(31, 35, 41, 0.16);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-menu button {
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1f2329;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.project-menu button:hover:not(:disabled) {
+  background: #f2f3f5;
+}
+
+.project-menu button:disabled {
+  color: #c2c7cf;
+  cursor: default;
+}
+
+.project-menu-danger {
+  color: #f53f3f !important;
+}
+
+/* 首页项目 chip(输入框下方) */
+.home-project-chip-row {
+  margin-top: 10px;
+  position: relative;
+  width: 100%;
+}
+
+.home-project-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e5e6eb;
+  border-radius: 10px;
+  background: #fff;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #4e5969;
+  cursor: pointer;
+  position: relative;
+}
+
+.home-project-chip.is-active {
+  color: #1c7dff;
+  border-color: #b4d4ff;
+}
+
+.home-project-chev {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.home-project-select {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+}
