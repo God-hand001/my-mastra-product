@@ -70,7 +70,12 @@ export const agent = new Agent({
 - 遇到阻塞时说明原因,并给出你已经尝试过的路径
 - file:// 链接使用 ${pathToFileURL(`${workspacePath}/`).href} 作为根;避免 Markdown 链接、localhost、/workspace、相对路径和静态文件服务器
 `,
-  model: 'deepseek/deepseek-v4-flash',
+  // 模型按请求动态解析(M7:对话栏模型切换)
+  // 前端每条消息携带 requestContext.model;未指定时用默认模型
+  model: ({ requestContext }) => {
+    const requested = requestContext?.get('model');
+    return typeof requested === 'string' && requested ? requested : 'deepseek/deepseek-v4-flash';
+  },
   defaultOptions: {
     maxSteps: 100,
     autoResumeSuspendedTools: true,

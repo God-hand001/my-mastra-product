@@ -178,6 +178,7 @@ export function SchedulesPage() {
   const [schedules, setSchedules] = useState<ScheduleView[] | null>(null);
   const [error, setError] = useState('');
   const [formOpen, setFormOpen] = useState(false);
+  const [runningId, setRunningId] = useState<string | null>(null);
 
   const refresh = useCallback(() => {
     listSchedules()
@@ -196,6 +197,20 @@ export function SchedulesPage() {
       refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  const runNow = async (schedule: ScheduleView) => {
+    setError('');
+    setRunningId(schedule.id);
+    try {
+      await runScheduleNow(schedule.id);
+      await refresh();
+      if (schedule.threadId) navigate(`/task/${schedule.threadId}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setRunningId(null);
     }
   };
 
@@ -272,7 +287,8 @@ export function SchedulesPage() {
                   <button
                     className="sched-icon-btn"
                     title="立即执行一次"
-                    onClick={() => void act(() => runScheduleNow(s.id))}
+                    disabled={runningId === s.id}
+                    onClick={() => void runNow(s)}
                   >
                     ▶
                   </button>

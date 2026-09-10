@@ -1184,3 +1184,92 @@ body {
   color: #c2c7cf;
   margin-top: 8px;
 }
+
+/* ===== 模型选择器(发送按钮旁) ===== */
+
+.model-select {
+  position: relative;
+}
+
+.model-select-btn {
+  border: none;
+  background: #f2f3f5;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #4e5969;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s;
+}
+
+.model-select-btn:hover {
+  background: #e8f3ff;
+  color: #1c7dff;
+}
+
+.model-select-chev {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.model-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+}
+
+.model-menu {
+  position: absolute;
+  bottom: 34px;
+  left: 0;
+  background: #fff;
+  border: 1px solid #e5e6eb;
+  border-radius: 12px;
+  padding: 6px;
+  min-width: 250px;
+  box-shadow: 0 8px 28px rgba(31, 35, 41, 0.16);
+  z-index: 30;
+}
+
+.model-menu-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.model-menu-item:hover {
+  background: #f2f6ff;
+}
+
+.model-menu-item.is-active {
+  background: #e8f3ff;
+}
+
+.model-menu-label {
+  font-size: 13px;
+  color: #1f2329;
+  font-weight: 500;
+}
+
+.model-menu-item.is-active .model-menu-label {
+  color: #1c7dff;
+}
+
+.model-menu-check {
+  font-weight: 700;
+}
+
+.model-menu-desc {
+  font-size: 12px;
+  color: #86909c;
+}

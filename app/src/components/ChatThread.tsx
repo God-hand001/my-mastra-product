@@ -11,6 +11,7 @@ import remarkGfm from 'remark-gfm';
 import { ToolCallCard } from './ToolCallCard';
 import { AttachmentBar } from './AttachmentBar';
 import { attachmentSection } from '../lib/transport';
+import { CHAT_MODELS, modelLabel } from '../lib/models';
 import type { PickedAttachment } from '../lib/driveClient';
 
 // Markdown 渲染(F5):remark-gfm 提供表格/删除线等扩展语法支持
@@ -108,20 +109,26 @@ function AssistantMessage() {
 
 // 任务对话主视图(assistant-ui primitives 自建)
 // M2:附件在发送时拼进消息本体(实时即显卡片),发送/回车走同一逻辑
+// M7:发送按钮旁模型选择器(下拉切换,requestContext.model 随请求携带)
 export function ChatThread({
   runtime,
   attachments,
+  model,
+  onModelChange,
   onOpenPicker,
   onRemoveAttachment,
   onAttachmentsConsumed,
 }: {
   runtime: AssistantRuntime;
   attachments: PickedAttachment[];
+  model: string;
+  onModelChange: (id: string) => void;
   onOpenPicker: () => void;
   onRemoveAttachment: (id: string) => void;
   onAttachmentsConsumed: () => void;
 }) {
   const [input, setInput] = useState('');
+  const [modelOpen, setModelOpen] = useState(false);
   const composer = runtime.thread.composer;
 
   const handleSend = () => {
@@ -171,6 +178,42 @@ export function ChatThread({
             />
           </div>
           <div className="chat-composer-actions">
+            {/* M7:当前模型 + 下拉切换(发送按钮旁) */}
+            <div className="model-select">
+              <button
+                type="button"
+                className="model-select-btn"
+                title="切换模型"
+                onClick={() => setModelOpen(o => !o)}
+              >
+                {modelLabel(model)}
+                <span className="model-select-chev">▾</span>
+              </button>
+              {modelOpen && (
+                <>
+                  <div className="model-menu-backdrop" onClick={() => setModelOpen(false)} />
+                  <div className="model-menu">
+                    {CHAT_MODELS.map(m => (
+                      <button
+                        key={m.id}
+                        type="button"
+                        className={`model-menu-item${model === m.id ? ' is-active' : ''}`}
+                        onClick={() => {
+                          onModelChange(m.id);
+                          setModelOpen(false);
+                        }}
+                      >
+                        <span className="model-menu-label">
+                          {m.label}
+                          {model === m.id && <span className="model-menu-check"> ✓</span>}
+                        </span>
+                        <span className="model-menu-desc">{m.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
             {/* 运行中显示"停止",空闲显示"发送" */}
             <ThreadPrimitive.If running>
               <button type="button" className="chat-btn chat-btn-cancel" onClick={() => composer.cancel()}>

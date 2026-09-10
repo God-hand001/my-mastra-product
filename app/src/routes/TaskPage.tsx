@@ -5,6 +5,7 @@ import { AssistantRuntimeProvider } from '@assistant-ui/react';
 import { useChatRuntime } from '@assistant-ui/react-ai-sdk';
 import type { UIMessage } from 'ai';
 import { attachmentSection, createTaskTransport, LOCAL_USER_RESOURCE } from '../lib/transport';
+import { loadSelectedModel, saveSelectedModel } from '../lib/models';
 import { toUIMessages, type MastraMessage } from '../lib/messages';
 import { ChatThread } from '../components/ChatThread';
 import { AttachmentPicker } from '../components/AttachmentPicker';
@@ -140,12 +141,21 @@ function TaskChat({
   // initialAttachments:首页创建任务时带过来的附件(随首条消息注入)
   const [attachments, setAttachments] = useState<PickedAttachment[]>(initialAttachments ?? []);
   const [pickerOpen, setPickerOpen] = useState(false);
+  // M7:对话栏模型切换(localStorage 记忆,transport 每次请求携带)
+  const [model, setModel] = useState(loadSelectedModel());
+  const modelRef = useRef(model);
+  modelRef.current = model;
 
   const runtime = useChatRuntime({
-    transport: createTaskTransport(taskId),
+    transport: createTaskTransport(taskId, () => modelRef.current),
     id: taskId,
     messages: history,
   });
+
+  const handleModelChange = (id: string) => {
+    setModel(id);
+    saveSelectedModel(id);
+  };
 
   // 首条消息:仅当任务为空且创建时带了输入内容时自动发出(F2)
   // 附件全文随首条消息一起注入(实时即显卡片)
@@ -169,6 +179,8 @@ function TaskChat({
         <ChatThread
           runtime={runtime}
           attachments={attachments}
+          model={model}
+          onModelChange={handleModelChange}
           onOpenPicker={() => setPickerOpen(true)}
           onRemoveAttachment={id => setAttachments(prev => prev.filter(a => a.id !== id))}
           onAttachmentsConsumed={() => setAttachments([])}

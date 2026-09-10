@@ -16,15 +16,23 @@ export function attachmentSection(attachments: PickedAttachment[]): string {
 // 一个任务 = 一个 thread:transport 负责在请求体带上 memory 参数
 // (Mastra agent.stream 的形状为 memory: { thread, resource },
 // chatRoute 把 body 多余字段透传给 agent.stream,见 plan 模块交互)
-export function createTaskTransport(threadId: string) {
+// M7:getModel 非空时,请求体携带 requestContext.model(对话栏模型切换)
+export function createTaskTransport(
+  threadId: string,
+  getModel?: () => string | undefined,
+) {
   return new AssistantChatTransport({
     api: `${API_BASE}/chat/agent`,
-    prepareSendMessagesRequest: ({ messages }) => ({
-      body: {
-        messages,
-        memory: { thread: threadId, resource: LOCAL_USER_RESOURCE },
-      },
-    }),
+    prepareSendMessagesRequest: ({ messages }) => {
+      const model = getModel?.();
+      return {
+        body: {
+          messages,
+          memory: { thread: threadId, resource: LOCAL_USER_RESOURCE },
+          ...(model ? { requestContext: { model } } : {}),
+        },
+      };
+    },
   });
 }
 
