@@ -67,12 +67,14 @@ export function TaskInput({
           <button className="task-input-plus" title="添加附件" onClick={() => setPickerOpen(true)}>
             +
           </button>
-          <ModelSelect model={model} onModelChange={onModelChange} />
           <span className="task-input-hint">Enter 发送,Shift+Enter 换行</span>
         </div>
-        <button className="task-input-send" onClick={submit} disabled={!value.trim() && attachments.length === 0}>
-          开始任务
-        </button>
+        <div className="task-input-right">
+          <ModelSelect model={model} onModelChange={onModelChange} />
+          <button className="task-input-send" onClick={submit} disabled={!value.trim() && attachments.length === 0}>
+            开始任务
+          </button>
+        </div>
       </div>
       {pickerOpen && (
         <AttachmentPicker

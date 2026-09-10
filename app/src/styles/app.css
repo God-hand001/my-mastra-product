@@ -1273,3 +1273,9 @@ body {
   font-size: 12px;
   color: #86909c;
 }
+
+.task-input-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
