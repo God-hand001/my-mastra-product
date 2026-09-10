@@ -67,7 +67,7 @@ function backendDownHtml() {
     <p style="color:#86909c;font-size:14px;margin:0 0 20px">
       请先在项目根目录运行 <code style="background:#eceef1;padding:2px 8px;border-radius:6px">npm run dev</code>(端口 4111),然后点击重试
     </p>
-    <button onclick="location.reload()" style="padding:10px 26px;border:none;border-radius:10px;background:#1c7dff;color:#fff;font-size:14px;cursor:pointer">重试</button>
+    <button onclick="location.reload()" style="padding:10px 26px;border:none;border-radius:10px;background:#30bf69;color:#fff;font-size:14px;cursor:pointer">重试</button>
   </div>
 </body></html>`;
 }

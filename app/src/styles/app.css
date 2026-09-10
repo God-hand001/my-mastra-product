@@ -1,11 +1,31 @@
+/* ===== 千问设计令牌(H0-P1,取自逆向 qw-reverse-analysis.md §1) ===== */
+:root {
+  --bg-layout: #fdfcfa;
+  --bg-container: #faf9f6;
+  --bg-elevated: #f7f4ef;
+  --bg-highlight-hover: #eeeeeb;
+  --border-main: #d4cfc6;
+  --border-secondary: #e5e1d9;
+  --border-tertiary: #ede9e2;
+  --text-base: #202116;
+  --text-secondary: #4a463c;
+  --text-tertiary: #6b665c;
+  --text-quaternary: #a7a49b;
+  --brand-40: #30bf69;
+  --brand-50: #3fd47b;
+  --brand-60: #58db8c;
+  --brand-70: #20803e;
+  --brand-90: #d4fae3;
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  color: #1f2329;
+  font-family: -apple-system, Inter, 'HarmonyOS Sans', 'Noto Sans SC', system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: #202116;
 }
 
 .app-shell {
@@ -16,8 +36,8 @@ body {
 .app-sidebar {
   width: 260px;
   flex-shrink: 0;
-  border-right: 1px solid #e5e6eb;
-  background: #f7f8fa;
+  border-right: 1px solid #e5e1d9;
+  background: #fdfcfa;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -35,15 +55,15 @@ body {
   padding: 10px 12px;
   border: none;
   border-radius: 10px;
-  background: #e8f3ff;
-  color: #1c7dff;
+  background: #e9f9f0;
+  color: #30bf69;
   font-size: 14px;
   cursor: pointer;
   text-align: left;
 }
 
 .new-task-btn:hover {
-  background: #d9ecff;
+  background: #d4fae3;
 }
 
 .drive-entry {
@@ -54,14 +74,14 @@ body {
   border: none;
   border-radius: 10px;
   background: transparent;
-  color: #4e5969;
+  color: #4a463c;
   font-size: 13px;
   cursor: pointer;
   text-align: left;
 }
 
 .drive-entry:hover {
-  background: #eceef1;
+  background: #eeeeeb;
 }
 
 /* ===== 附件条与选择弹层 ===== */
@@ -78,7 +98,7 @@ body {
   align-items: center;
   gap: 6px;
   background: #f2f6ff;
-  border: 1px solid #b4d4ff;
+  border: 1px solid #9fdcb6;
   border-radius: 8px;
   padding: 4px 8px;
   font-size: 12px;
@@ -92,7 +112,7 @@ body {
 }
 
 .attachment-chip-size {
-  color: #86909c;
+  color: #6b665c;
   flex-shrink: 0;
 }
 
@@ -100,7 +120,7 @@ body {
   border: none;
   background: none;
   cursor: pointer;
-  color: #86909c;
+  color: #6b665c;
   padding: 0 2px;
   font-size: 14px;
 }
@@ -118,18 +138,18 @@ body {
 .task-input-plus {
   width: 28px;
   height: 28px;
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 8px;
   background: #fff;
-  color: #4e5969;
+  color: #4a463c;
   font-size: 16px;
   cursor: pointer;
   line-height: 1;
 }
 
 .task-input-plus:hover {
-  border-color: #1c7dff;
-  color: #1c7dff;
+  border-color: #30bf69;
+  color: #30bf69;
 }
 
 .picker-mask {
@@ -165,27 +185,27 @@ body {
   border-radius: 8px;
   cursor: pointer;
   font-size: 13px;
-  color: #4e5969;
+  color: #4a463c;
 }
 
 .picker-tabs button.is-active {
-  background: #e8f3ff;
-  color: #1c7dff;
+  background: #e9f9f0;
+  color: #30bf69;
 }
 
 .picker-close {
   margin-left: auto;
   font-size: 18px;
-  color: #86909c;
+  color: #6b665c;
 }
 
 .picker-upload-btn {
   width: 100%;
   padding: 14px;
-  border: 1px dashed #b4d4ff;
+  border: 1px dashed #9fdcb6;
   border-radius: 10px;
-  background: #f7fbff;
-  color: #1c7dff;
+  background: #f7fcf9;
+  color: #30bf69;
   cursor: pointer;
   font-size: 13px;
 }
@@ -207,7 +227,7 @@ body {
 }
 
 .picker-drive-item:hover {
-  background: #f2f3f5;
+  background: #f0ede7;
 }
 
 .picker-drive-name {
@@ -217,13 +237,13 @@ body {
 }
 
 .picker-drive-meta {
-  color: #86909c;
+  color: #6b665c;
   font-size: 12px;
   flex-shrink: 0;
 }
 
 .picker-tip {
-  color: #86909c;
+  color: #6b665c;
   font-size: 13px;
   text-align: center;
   padding: 20px 0;
@@ -258,7 +278,7 @@ body {
 .drive-upload-btn {
   border: none;
   border-radius: 10px;
-  background: #1c7dff;
+  background: #30bf69;
   color: #fff;
   font-size: 13px;
   padding: 9px 16px;
@@ -266,7 +286,7 @@ body {
 }
 
 .drive-upload-btn:disabled {
-  background: #a9b0b8;
+  background: #a8a296;
 }
 
 .drive-error {
@@ -276,7 +296,7 @@ body {
 }
 
 .drive-empty {
-  color: #86909c;
+  color: #6b665c;
   text-align: center;
   padding: 60px 0;
   font-size: 14px;
@@ -287,7 +307,7 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 12px;
   padding: 12px 16px;
   margin-bottom: 8px;
@@ -306,7 +326,7 @@ body {
 
 .drive-item-meta {
   font-size: 12px;
-  color: #86909c;
+  color: #6b665c;
   margin-top: 4px;
 }
 
@@ -317,10 +337,10 @@ body {
 }
 
 .drive-item-btn {
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 8px;
   background: #fff;
-  color: #4e5969;
+  color: #4a463c;
   font-size: 12px;
   padding: 5px 12px;
   cursor: pointer;
@@ -328,8 +348,8 @@ body {
 }
 
 .drive-item-btn:hover {
-  border-color: #1c7dff;
-  color: #1c7dff;
+  border-color: #30bf69;
+  color: #30bf69;
 }
 
 .drive-item-delete:hover {
@@ -343,7 +363,7 @@ body {
   margin-top: 20px;
   margin-bottom: 8px;
   font-size: 12px;
-  color: #86909c;
+  color: #6b665c;
   padding: 0 4px;
 }
 
@@ -353,7 +373,7 @@ body {
 }
 
 .task-list-empty {
-  color: #86909c;
+  color: #6b665c;
   font-size: 13px;
   text-align: center;
   padding: 24px 0;
@@ -367,11 +387,11 @@ body {
 }
 
 .task-list-item:hover {
-  background: #eceef1;
+  background: #eeeeeb;
 }
 
 .task-list-item.is-current {
-  background: #e8f3ff;
+  background: #e9f9f0;
 }
 
 .task-list-item-title {
@@ -390,14 +410,14 @@ body {
 
 .task-list-item-time {
   font-size: 12px;
-  color: #86909c;
+  color: #6b665c;
 }
 
 .task-list-item-delete {
   display: none;
   border: none;
   background: none;
-  color: #86909c;
+  color: #6b665c;
   font-size: 12px;
   cursor: pointer;
   padding: 0;
@@ -416,15 +436,15 @@ body {
   align-items: center;
   gap: 10px;
   padding: 12px 4px 0;
-  border-top: 1px solid #e5e6eb;
+  border-top: 1px solid #e5e1d9;
 }
 
 .sidebar-avatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #d9ecff;
-  color: #1c7dff;
+  background: #d4fae3;
+  color: #30bf69;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -438,7 +458,7 @@ body {
 
 .sidebar-plan {
   font-size: 12px;
-  color: #86909c;
+  color: #6b665c;
 }
 
 .app-main {
@@ -470,7 +490,7 @@ body {
 }
 
 .task-input-box {
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 16px;
   padding: 14px 16px 10px;
   box-shadow: 0 4px 16px rgba(31, 35, 41, 0.06);
@@ -478,7 +498,7 @@ body {
 }
 
 .task-input-box:focus-within {
-  border-color: #1c7dff;
+  border-color: #30bf69;
 }
 
 .task-input-textarea {
@@ -492,7 +512,7 @@ body {
 }
 
 .task-input-textarea::placeholder {
-  color: #c2c7cf;
+  color: #c9c4b8;
 }
 
 .task-input-footer {
@@ -504,13 +524,13 @@ body {
 
 .task-input-hint {
   font-size: 12px;
-  color: #c2c7cf;
+  color: #c9c4b8;
 }
 
 .task-input-send {
   border: none;
   border-radius: 10px;
-  background: #1c7dff;
+  background: #30bf69;
   color: #fff;
   font-size: 14px;
   padding: 8px 16px;
@@ -518,8 +538,8 @@ body {
 }
 
 .task-input-send:disabled {
-  background: #e5e6eb;
-  color: #a9b0b8;
+  background: #e5e1d9;
+  color: #a8a296;
   cursor: default;
 }
 
@@ -527,7 +547,7 @@ body {
 
 .task-loading {
   padding: 40px;
-  color: #86909c;
+  color: #6b665c;
   font-size: 14px;
 }
 
@@ -551,7 +571,7 @@ body {
 
 .chat-welcome {
   text-align: center;
-  color: #86909c;
+  color: #6b665c;
   font-size: 14px;
   padding: 48px 24px;
 }
@@ -570,8 +590,8 @@ body {
 }
 
 .msg-user-text {
-  background: #e8f3ff;
-  color: #1f2329;
+  background: #e9f9f0;
+  color: #202116;
   border-radius: 14px 14px 4px 14px;
   padding: 10px 14px;
   max-width: 80%;
@@ -596,7 +616,7 @@ body {
   min-width: 240px;
   max-width: 80%;
   background: #fff;
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 12px;
   padding: 10px 14px;
   box-shadow: 0 2px 8px rgba(31, 35, 41, 0.06);
@@ -607,7 +627,7 @@ body {
 }
 
 .msg-file-card:hover {
-  border-color: #1c7dff;
+  border-color: #30bf69;
 }
 
 .msg-file-icon {
@@ -621,7 +641,7 @@ body {
   font-weight: 700;
   font-size: 16px;
   flex-shrink: 0;
-  background: #4e5969;
+  background: #4a463c;
 }
 
 .msg-file-icon.file-docx {
@@ -642,7 +662,7 @@ body {
 
 .msg-file-name {
   font-size: 13px;
-  color: #1f2329;
+  color: #202116;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -650,7 +670,7 @@ body {
 
 .msg-file-size {
   font-size: 12px;
-  color: #86909c;
+  color: #6b665c;
   margin-top: 2px;
 }
 
@@ -664,7 +684,7 @@ body {
 }
 
 .chat-markdown pre {
-  background: #f2f3f5;
+  background: #f0ede7;
   border-radius: 8px;
   padding: 12px;
   overflow-x: auto;
@@ -672,7 +692,7 @@ body {
 }
 
 .chat-markdown code {
-  background: #f2f3f5;
+  background: #f0ede7;
   border-radius: 4px;
   padding: 1px 5px;
   font-size: 13px;
@@ -691,17 +711,17 @@ body {
 
 .chat-markdown th,
 .chat-markdown td {
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   padding: 6px 10px;
   font-size: 13px;
   text-align: left;
 }
 
 .chat-markdown blockquote {
-  border-left: 3px solid #e5e6eb;
+  border-left: 3px solid #e5e1d9;
   margin: 8px 0;
   padding: 2px 12px;
-  color: #4e5969;
+  color: #4a463c;
 }
 
 .chat-composer-area {
@@ -713,7 +733,7 @@ body {
 }
 
 .chat-composer {
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 14px;
   padding: 10px 14px;
   box-shadow: 0 4px 16px rgba(31, 35, 41, 0.06);
@@ -722,7 +742,7 @@ body {
 }
 
 .chat-composer:focus-within {
-  border-color: #1c7dff;
+  border-color: #30bf69;
 }
 
 .chat-composer-input {
@@ -735,7 +755,7 @@ body {
 }
 
 .chat-composer-input::placeholder {
-  color: #c2c7cf;
+  color: #c9c4b8;
 }
 
 .chat-composer-row {
@@ -763,13 +783,13 @@ body {
 }
 
 .chat-btn-send {
-  background: #1c7dff;
+  background: #30bf69;
   color: #fff;
 }
 
 .chat-btn-send:disabled {
-  background: #e5e6eb;
-  color: #a9b0b8;
+  background: #e5e1d9;
+  color: #a8a296;
   cursor: default;
 }
 
@@ -782,16 +802,16 @@ body {
 /* ===== 工具调用卡片 ===== */
 
 .tool-call-card {
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 10px;
   padding: 8px 12px;
   margin: 8px 0;
-  background: #fafbfc;
+  background: #faf9f6;
   font-size: 13px;
 }
 
 .tool-call-card.is-running {
-  border-color: #b4d4ff;
+  border-color: #9fdcb6;
   background: #f4f9ff;
 }
 
@@ -817,12 +837,12 @@ body {
 }
 
 .tool-call-status {
-  color: #86909c;
+  color: #6b665c;
   font-size: 12px;
 }
 
 .tool-call-status.running {
-  color: #1c7dff;
+  color: #30bf69;
 }
 
 .tool-call-body {
@@ -831,12 +851,12 @@ body {
 
 .tool-call-label {
   font-size: 12px;
-  color: #86909c;
+  color: #6b665c;
   margin-bottom: 2px;
 }
 
 .tool-call-pre {
-  background: #f2f3f5;
+  background: #f0ede7;
   border-radius: 8px;
   padding: 8px 10px;
   font-size: 12px;
@@ -870,30 +890,30 @@ body {
 
 .sched-subtitle {
   font-size: 13px;
-  color: #86909c;
+  color: #6b665c;
   margin-top: 6px;
 }
 
 .sched-new-btn {
   border: none;
   border-radius: 10px;
-  background: #1c7dff;
+  background: #30bf69;
   color: #fff;
   font-size: 13px;
   padding: 10px 18px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(28, 125, 255, 0.25);
+  box-shadow: 0 2px 8px rgba(48, 191, 105, 0.25);
   transition: background 0.15s;
 }
 
 .sched-new-btn:hover {
-  background: #0e6ae5;
+  background: #2ccc6c;
 }
 
 /* 创建表单卡 */
 .sched-form {
   background: #fff;
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 16px;
   padding: 20px 22px;
   margin-bottom: 18px;
@@ -914,7 +934,7 @@ body {
 
 .sched-form-sub {
   font-size: 12px;
-  color: #86909c;
+  color: #6b665c;
 }
 
 .sched-field {
@@ -931,7 +951,7 @@ body {
 
 .sched-field-label {
   font-size: 13px;
-  color: #4e5969;
+  color: #4a463c;
   font-weight: 500;
 }
 
@@ -941,7 +961,7 @@ body {
 }
 
 .sched-input {
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 10px;
   padding: 9px 12px;
   font-size: 14px;
@@ -953,8 +973,8 @@ body {
 }
 
 .sched-input:focus {
-  border-color: #1c7dff;
-  box-shadow: 0 0 0 3px rgba(28, 125, 255, 0.12);
+  border-color: #30bf69;
+  box-shadow: 0 0 0 3px rgba(48, 191, 105, 0.12);
 }
 
 .sched-textarea {
@@ -964,7 +984,7 @@ body {
 
 .sched-seg {
   display: inline-flex;
-  background: #f2f3f5;
+  background: #f0ede7;
   border-radius: 10px;
   padding: 3px;
   gap: 2px;
@@ -976,14 +996,14 @@ body {
   border-radius: 8px;
   padding: 7px 16px;
   font-size: 13px;
-  color: #4e5969;
+  color: #4a463c;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .sched-seg-btn.is-active {
   background: #fff;
-  color: #1c7dff;
+  color: #30bf69;
   font-weight: 500;
   box-shadow: 0 1px 4px rgba(31, 35, 41, 0.12);
 }
@@ -1001,33 +1021,33 @@ body {
 }
 
 .sched-btn {
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 10px;
   background: #fff;
-  color: #4e5969;
+  color: #4a463c;
   font-size: 13px;
   padding: 8px 18px;
   cursor: pointer;
 }
 
 .sched-btn:hover {
-  border-color: #1c7dff;
-  color: #1c7dff;
+  border-color: #30bf69;
+  color: #30bf69;
 }
 
 .sched-btn-primary {
   border: none;
-  background: #1c7dff;
+  background: #30bf69;
   color: #fff;
-  box-shadow: 0 2px 8px rgba(28, 125, 255, 0.25);
+  box-shadow: 0 2px 8px rgba(48, 191, 105, 0.25);
 }
 
 .sched-btn-primary:hover {
-  background: #0e6ae5;
+  background: #2ccc6c;
 }
 
 .sched-btn-primary:disabled {
-  background: #a9b0b8;
+  background: #a8a296;
   box-shadow: none;
 }
 
@@ -1044,15 +1064,15 @@ body {
   align-items: center;
   gap: 16px;
   background: #fff;
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 16px;
   padding: 16px 20px;
   transition: box-shadow 0.15s, border-color 0.15s;
 }
 
 .sched-card:hover {
-  border-color: #b4d4ff;
-  box-shadow: 0 4px 16px rgba(28, 125, 255, 0.08);
+  border-color: #9fdcb6;
+  box-shadow: 0 4px 16px rgba(48, 191, 105, 0.08);
 }
 
 .sched-card-main {
@@ -1079,13 +1099,13 @@ body {
   padding: 2px 10px;
   border-radius: 999px;
   background: #e8f7ee;
-  color: #00b42a;
+  color: #30bf69;
   font-weight: 500;
 }
 
 .sched-status.is-paused {
-  background: #f2f3f5;
-  color: #86909c;
+  background: #f0ede7;
+  color: #6b665c;
 }
 
 .sched-card-meta {
@@ -1093,7 +1113,7 @@ body {
   gap: 16px;
   margin-top: 6px;
   font-size: 13px;
-  color: #86909c;
+  color: #6b665c;
 }
 
 .sched-card-actions {
@@ -1106,7 +1126,7 @@ body {
 .sched-icon-btn {
   width: 32px;
   height: 32px;
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 10px;
   background: #fff;
   cursor: pointer;
@@ -1118,8 +1138,8 @@ body {
 }
 
 .sched-icon-btn:hover {
-  border-color: #1c7dff;
-  background: #f0f7ff;
+  border-color: #30bf69;
+  background: #f4fcf7;
 }
 
 .sched-icon-danger:hover {
@@ -1133,7 +1153,7 @@ body {
   height: 22px;
   border: none;
   border-radius: 11px;
-  background: #d5d9de;
+  background: #d4cfc6;
   position: relative;
   cursor: pointer;
   padding: 0;
@@ -1154,7 +1174,7 @@ body {
 }
 
 .sched-switch.is-on {
-  background: #1c7dff;
+  background: #30bf69;
 }
 
 .sched-switch.is-on .sched-switch-knob {
@@ -1168,7 +1188,7 @@ body {
 }
 
 .sched-empty {
-  color: #86909c;
+  color: #6b665c;
   text-align: center;
   padding: 70px 0;
   font-size: 14px;
@@ -1181,7 +1201,7 @@ body {
 
 .sched-empty-sub {
   font-size: 13px;
-  color: #c2c7cf;
+  color: #c9c4b8;
   margin-top: 8px;
 }
 
@@ -1193,11 +1213,11 @@ body {
 
 .model-select-btn {
   border: none;
-  background: #f2f3f5;
+  background: #f0ede7;
   border-radius: 8px;
   padding: 6px 10px;
   font-size: 12px;
-  color: #4e5969;
+  color: #4a463c;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -1206,8 +1226,8 @@ body {
 }
 
 .model-select-btn:hover {
-  background: #e8f3ff;
-  color: #1c7dff;
+  background: #e9f9f0;
+  color: #30bf69;
 }
 
 .model-select-chev {
@@ -1226,7 +1246,7 @@ body {
   bottom: 34px;
   left: 0;
   background: #fff;
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 12px;
   padding: 6px;
   min-width: 250px;
@@ -1252,17 +1272,17 @@ body {
 }
 
 .model-menu-item.is-active {
-  background: #e8f3ff;
+  background: #e9f9f0;
 }
 
 .model-menu-label {
   font-size: 13px;
-  color: #1f2329;
+  color: #202116;
   font-weight: 500;
 }
 
 .model-menu-item.is-active .model-menu-label {
-  color: #1c7dff;
+  color: #30bf69;
 }
 
 .model-menu-check {
@@ -1271,7 +1291,7 @@ body {
 
 .model-menu-desc {
   font-size: 12px;
-  color: #86909c;
+  color: #6b665c;
 }
 
 .task-input-right {
@@ -1301,15 +1321,15 @@ body {
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #4e5969;
+  color: #4a463c;
   font-size: 14px;
   cursor: pointer;
   line-height: 1;
 }
 
 .sidebar-section-add:hover {
-  background: #e8f3ff;
-  color: #1c7dff;
+  background: #e9f9f0;
+  color: #30bf69;
 }
 
 .project-list {
@@ -1326,16 +1346,16 @@ body {
 }
 
 .project-item:hover {
-  background: #eceef1;
+  background: #eeeeeb;
 }
 
 .project-item.is-current {
-  background: #e8f3ff;
+  background: #e9f9f0;
 }
 
 .project-item-name {
   font-size: 13px;
-  color: #1f2329;
+  color: #202116;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1372,35 +1392,35 @@ body {
 
 .project-field-label {
   font-size: 13px;
-  color: #1f2329;
+  color: #202116;
   font-weight: 500;
 }
 
 .project-dir-btn {
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 10px;
   background: #fff;
   padding: 12px 14px;
   font-size: 13px;
-  color: #4e5969;
+  color: #4a463c;
   cursor: pointer;
   text-align: left;
   transition: all 0.15s;
 }
 
 .project-dir-btn:hover {
-  border-color: #1c7dff;
-  color: #1c7dff;
+  border-color: #30bf69;
+  color: #30bf69;
 }
 
 .project-dir-value {
-  color: #1f2329;
+  color: #202116;
   word-break: break-all;
 }
 
 .project-dir-hint {
   font-size: 12px;
-  color: #86909c;
+  color: #6b665c;
 }
 
 .project-modal-actions {
@@ -1420,16 +1440,16 @@ body {
 
 .home-project-label {
   font-size: 13px;
-  color: #4e5969;
+  color: #4a463c;
 }
 
 .home-project-select {
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 8px;
   padding: 6px 10px;
   font-size: 13px;
   background: #fff;
-  color: #1f2329;
+  color: #202116;
   cursor: pointer;
 }
 
@@ -1449,16 +1469,16 @@ body {
 }
 
 .project-item:hover {
-  background: #eceef1;
+  background: #eeeeeb;
 }
 
 .project-item.is-current {
-  background: #e8f3ff;
+  background: #e9f9f0;
 }
 
 .project-item-chevron {
   font-size: 10px;
-  color: #86909c;
+  color: #6b665c;
   transition: transform 0.15s;
   flex-shrink: 0;
   width: 12px;
@@ -1472,7 +1492,7 @@ body {
 .project-item-name {
   font-size: 13px;
   font-weight: 500;
-  color: #1f2329;
+  color: #202116;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1497,20 +1517,20 @@ body {
   border-radius: 6px;
   padding: 2px 5px;
   font-size: 12px;
-  color: #4e5969;
+  color: #4a463c;
   cursor: pointer;
   line-height: 1;
 }
 
 .project-item-btn:hover {
-  background: #d9ecff;
-  color: #1c7dff;
+  background: #d4fae3;
+  color: #30bf69;
 }
 
 .project-tasks {
   margin: 2px 0 6px 16px;
   padding-left: 10px;
-  border-left: 1px solid #eceef1;
+  border-left: 1px solid #eeeeeb;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -1538,7 +1558,7 @@ body {
   top: 30px;
   right: 0;
   background: #fff;
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 12px;
   padding: 6px;
   min-width: 180px;
@@ -1555,17 +1575,17 @@ body {
   padding: 8px 10px;
   border-radius: 8px;
   font-size: 13px;
-  color: #1f2329;
+  color: #202116;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .project-menu button:hover:not(:disabled) {
-  background: #f2f3f5;
+  background: #f0ede7;
 }
 
 .project-menu button:disabled {
-  color: #c2c7cf;
+  color: #c9c4b8;
   cursor: default;
 }
 
@@ -1584,19 +1604,19 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid #e5e6eb;
+  border: 1px solid #e5e1d9;
   border-radius: 10px;
   background: #fff;
   padding: 6px 12px;
   font-size: 13px;
-  color: #4e5969;
+  color: #4a463c;
   cursor: pointer;
   position: relative;
 }
 
 .home-project-chip.is-active {
-  color: #1c7dff;
-  border-color: #b4d4ff;
+  color: #30bf69;
+  border-color: #9fdcb6;
 }
 
 .home-project-chev {
