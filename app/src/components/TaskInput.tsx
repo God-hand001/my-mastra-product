@@ -1,17 +1,23 @@
 import { useState, type KeyboardEvent } from 'react';
 import { AttachmentBar, type Attachment } from './AttachmentBar';
 import { AttachmentPicker } from './AttachmentPicker';
+import { ModelSelect } from './ModelSelect';
 
 // 首页的大任务输入框(千问办公样式:居中、大圆角、回车提交)
 // M2:"+"支持附件(上传新文件 / 从网盘选择),最多 5 个
+// M7:模型选择(选择记忆到 localStorage,新任务的首条消息即用该模型)
 export function TaskInput({
   onSubmit,
   attachments,
   onAttachmentsChange,
+  model,
+  onModelChange,
 }: {
   onSubmit: (text: string, attachments: Attachment[]) => void;
   attachments: Attachment[];
   onAttachmentsChange: (list: Attachment[]) => void;
+  model: string;
+  onModelChange: (id: string) => void;
 }) {
   const [value, setValue] = useState('');
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -61,6 +67,7 @@ export function TaskInput({
           <button className="task-input-plus" title="添加附件" onClick={() => setPickerOpen(true)}>
             +
           </button>
+          <ModelSelect model={model} onModelChange={onModelChange} />
           <span className="task-input-hint">Enter 发送,Shift+Enter 换行</span>
         </div>
         <button className="task-input-send" onClick={submit} disabled={!value.trim() && attachments.length === 0}>

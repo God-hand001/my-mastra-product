@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { TaskInput } from '../components/TaskInput';
 import type { Attachment } from '../components/AttachmentBar';
 import { useTaskStore } from '../lib/taskStore';
+import { loadSelectedModel, saveSelectedModel } from '../lib/models';
 
 function greeting(): string {
   const hour = new Date().getHours();
@@ -16,6 +17,7 @@ function greeting(): string {
 export function HomePage() {
   const navigate = useNavigate();
   const { createTask } = useTaskStore();
+  const [model, setModel] = useState(loadSelectedModel());
   const [attachments, setAttachments] = useState<Attachment[]>([]);
 
   const handleSubmit = (text: string, list: Attachment[]) => {
@@ -40,6 +42,11 @@ export function HomePage() {
           onSubmit={handleSubmit}
           attachments={attachments}
           onAttachmentsChange={setAttachments}
+          model={model}
+          onModelChange={id => {
+            setModel(id);
+            saveSelectedModel(id);
+          }}
         />
       </div>
     </div>
