@@ -6,6 +6,7 @@ import { askUserTool, webFetchTool } from '@mastra/core/tools';
 import { LocalFilesystem, LocalSandbox, WORKSPACE_TOOLS, Workspace } from '@mastra/core/workspace';
 import { Memory } from '@mastra/memory';
 import { startScheduleTool, stopScheduleTool } from '../tools/schedule-tools';
+import { projectListFilesTool, projectReadFileTool, projectWriteFileTool } from '../tools/project-tools';
 import { webSearchTool } from '../tools/web-search-tool';
 
 const workspacePath = 'workspace';
@@ -65,6 +66,10 @@ export const agent = new Agent({
 - 简单的文本问题(字数、找词、摘要)直接从附件/上下文回答,不要动用命令执行类工具
 - 不要主动执行删除、清理类操作,除非用户明确要求
 
+项目任务:
+- 当请求上下文包含当前项目时,涉及项目目录内文件的操作(列出/读取/写入)优先使用 project_* 三个项目工具
+- 用户未选择项目时,若任务涉及项目文件,提醒用户先在首页选择项目
+
 约束:
 - 关键信息不明确时先向用户提问确认,不要瞎猜
 - 遇到阻塞时说明原因,并给出你已经尝试过的路径
@@ -92,6 +97,9 @@ export const agent = new Agent({
     stop_schedule: stopScheduleTool,
     web_fetch: webFetchTool,
     web_search: webSearchTool,
+    project_list_files: projectListFilesTool,
+    project_read_file: projectReadFileTool,
+    project_write_file: projectWriteFileTool,
   },
   signals: [new TaskSignalProvider()],
 });
