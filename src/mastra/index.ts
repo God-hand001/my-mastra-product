@@ -13,6 +13,7 @@ import { startScheduleTool, stopScheduleTool } from './tools/schedule-tools';
 import { chatRoute } from '@mastra/ai-sdk';
 import { driveRoutes } from './server/drive-routes';
 import { scheduleRoutes } from './server/schedule-routes';
+import { projectRoutes } from './server/project-routes';
 import { ensureThreadSubscription } from './server/thread-subscriptions';
 
 export const mastra = new Mastra({
@@ -34,6 +35,7 @@ export const mastra = new Mastra({
       }),
       ...driveRoutes,
       ...scheduleRoutes,
+      ...projectRoutes,
     ],
   },
   storage: new MastraCompositeStore({
