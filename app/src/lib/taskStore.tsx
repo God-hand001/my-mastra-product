@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { deleteThread, listThreads, type TaskThread } from './agentClient';
-import { getLinks, type ThreadLink } from './projectsClient';
+import { getLinks, linkThread, type ThreadLink } from './projectsClient';
 import { LOCAL_USER_RESOURCE, newTaskId } from './transport';
 
 // 轻量任务状态(plan:不引 zustand,用 React context)
@@ -51,22 +51,34 @@ export function TaskStoreProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const createTask = useCallback((firstMessage: string) => {
-    const id = newTaskId();
-    const now = new Date().toISOString();
-    // 乐观插入:标题先用任务描述截断,首轮对话结束后端 generateTitle 生成正式标题
-    setTasks(prev => [
-      {
-        id,
-        title: firstMessage.trim().slice(0, 30) || '新任务',
-        createdAt: now,
-        updatedAt: now,
-        resourceId: LOCAL_USER_RESOURCE,
-      },
-      ...prev,
-    ]);
-    return id;
-  }, []);
+  const createTask = useCallback(
+    (firstMessage: string) => {
+      const id = newTaskId();
+      const now = new Date().toISOString();
+      // 乐观插入:标题先用任务描述截断,首轮对话结束后端 generateTitle 生成正式标题
+      setTasks(prev => [
+        {
+          id,
+          title: firstMessage.trim().slice(0, 30) || '新任务',
+          createdAt: now,
+          updatedAt: now,
+          resourceId: LOCAL_USER_RESOURCE,
+        },
+        ...prev,
+      ]);
+      // H0:创建时即归入当前所选项目(乐观插入绑定关系,服务端同步落库)
+      if (selectedProject) {
+        setLinks(prev =>
+          prev.some(l => l.threadId === id)
+            ? prev
+            : [...prev, { threadId: id, projectId: selectedProject, linkedAt: now }],
+        );
+        void linkThread(id, selectedProject).catch(err => console.error('绑定项目失败', err));
+      }
+      return id;
+    },
+    [selectedProject],
+  );
 
   const removeTask = useCallback(
     async (id: string) => {

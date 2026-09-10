@@ -188,6 +188,10 @@ export function Sidebar({ projects }: { projects: Project[] }) {
     return pa - pb || b.createdAt.localeCompare(a.createdAt);
   });
 
+  // 已归属项目的会话嵌在项目下,最近任务只显示未归属的
+  const linkedThreadIds = new Set(links.map(l => l.threadId));
+  const recentTasks = tasks.filter(t => !linkedThreadIds.has(t.id));
+
   return (
     <aside className="app-sidebar">
       <div className="sidebar-brand">嘉立创办公</div>
@@ -246,10 +250,12 @@ export function Sidebar({ projects }: { projects: Project[] }) {
       <div className="task-list">
         {loading ? (
           <div className="task-list-empty">加载中…</div>
-        ) : tasks.length === 0 ? (
-          <div className="task-list-empty">还未创建过任务</div>
+        ) : recentTasks.length === 0 ? (
+          <div className="task-list-empty">
+            {selectedProject ? '该项目下暂无任务' : '还未创建过任务'}
+          </div>
         ) : (
-          tasks.map(task => <TaskListItem key={task.id} task={task} />)
+          recentTasks.map(task => <TaskListItem key={task.id} task={task} />)
         )}
       </div>
 
