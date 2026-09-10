@@ -5,6 +5,7 @@ import {
   AssistantRuntime,
   MessagePrimitive,
   ThreadPrimitive,
+  useMessageTiming,
   type TextMessagePartProps,
 } from '@assistant-ui/react';
 import { MarkdownTextPrimitive } from '@assistant-ui/react-markdown';
@@ -78,10 +79,10 @@ function UserMessage() {
   return (
     <div className="msg msg-user">
       <MessagePrimitive.Parts components={{ Text: UserText }} />
-      <div className="msg-actions">
+      <div className="msg-footer">
         <ActionBarPrimitive.Root hideWhenRunning autohide="not-last">
-          <ActionBarPrimitive.Copy className="msg-action-btn" title="复制">
-            ⧉
+          <ActionBarPrimitive.Copy className="msg-action-btn">
+            复制
           </ActionBarPrimitive.Copy>
         </ActionBarPrimitive.Root>
       </div>
@@ -102,6 +103,20 @@ function ChatMessage() {
   );
 }
 
+// 回复耗时(P2:流式中实时显示,完成后为总耗时;历史消息无 timing 时不显示)
+function MessageStats() {
+  const timing = useMessageTiming();
+  if (!timing) return null;
+  const seconds = (timing.totalStreamTime ?? Date.now() - timing.streamStartTime) / 1000;
+  if (!Number.isFinite(seconds) || seconds <= 0) return null;
+  return (
+    <span className="msg-duration">
+      ⏱ {seconds < 60 ? seconds.toFixed(1) + ' 秒' : Math.floor(seconds / 60) + ' 分 ' + Math.round(seconds % 60) + ' 秒'}
+      {timing.tokenCount ? ` · ${timing.tokenCount} tokens` : ''}
+    </span>
+  );
+}
+
 function AssistantMessage() {
   return (
     <div className="msg msg-assistant">
@@ -111,13 +126,14 @@ function AssistantMessage() {
           tools: { Fallback: ToolCallCard },
         }}
       />
-      <div className="msg-actions">
+      <div className="msg-footer">
+        <MessageStats />
         <ActionBarPrimitive.Root hideWhenRunning autohide="not-last">
-          <ActionBarPrimitive.Copy className="msg-action-btn" title="复制">
-            ⧉
+          <ActionBarPrimitive.Copy className="msg-action-btn">
+            复制
           </ActionBarPrimitive.Copy>
-          <ActionBarPrimitive.Reload className="msg-action-btn" title="重新生成">
-            ↻
+          <ActionBarPrimitive.Reload className="msg-action-btn">
+            重新生成
           </ActionBarPrimitive.Reload>
         </ActionBarPrimitive.Root>
       </div>
