@@ -1,6 +1,7 @@
 import { useState, type KeyboardEvent } from 'react';
 import { API_BASE } from '../lib/apiBase';
 import {
+  ActionBarPrimitive,
   AssistantRuntime,
   MessagePrimitive,
   ThreadPrimitive,
@@ -77,6 +78,13 @@ function UserMessage() {
   return (
     <div className="msg msg-user">
       <MessagePrimitive.Parts components={{ Text: UserText }} />
+      <div className="msg-actions">
+        <ActionBarPrimitive.Root hideWhenRunning autohide="not-last">
+          <ActionBarPrimitive.Copy className="msg-action-btn" title="复制">
+            ⧉
+          </ActionBarPrimitive.Copy>
+        </ActionBarPrimitive.Root>
+      </div>
     </div>
   );
 }
@@ -103,6 +111,16 @@ function AssistantMessage() {
           tools: { Fallback: ToolCallCard },
         }}
       />
+      <div className="msg-actions">
+        <ActionBarPrimitive.Root hideWhenRunning autohide="not-last">
+          <ActionBarPrimitive.Copy className="msg-action-btn" title="复制">
+            ⧉
+          </ActionBarPrimitive.Copy>
+          <ActionBarPrimitive.Reload className="msg-action-btn" title="重新生成">
+            ↻
+          </ActionBarPrimitive.Reload>
+        </ActionBarPrimitive.Root>
+      </div>
     </div>
   );
 }

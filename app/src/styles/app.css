@@ -1631,3 +1631,151 @@ body {
   cursor: pointer;
   width: 100%;
 }
+
+/* ===== 工具调用卡(P2 千问样式) ===== */
+
+.tool-card {
+  border: 1px solid var(--border-secondary);
+  border-radius: 12px;
+  padding: 0;
+  margin: 10px 0;
+  background: #fff;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+.tool-card-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.tool-card-summary::-webkit-details-marker {
+  display: none;
+}
+
+.tool-card-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--brand-40);
+}
+
+.tool-card.is-error .tool-card-icon {
+  color: #f53f3f;
+}
+
+.tool-card-label {
+  font-size: 13px;
+  color: var(--text-base);
+  flex: 1;
+}
+
+.tool-card.is-running .tool-card-label {
+  color: var(--brand-70);
+}
+
+.tool-card-chev {
+  font-size: 10px;
+  color: var(--text-quaternary);
+}
+
+.tool-card-body {
+  padding: 0 14px 12px 44px;
+}
+
+.tool-card-label {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 4px;
+}
+
+.tool-card-pre {
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0 0 8px;
+  font-family: var(--font-mono, ui-monospace, Consolas, monospace);
+}
+
+.tool-card-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border-secondary);
+  border-top-color: var(--brand-40);
+  border-radius: 50%;
+  animation: tool-spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes tool-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 流式块渐入(千问 markdown-streaming-block-fade-in) */
+.chat-markdown > * {
+  animation: md-fade-in 0.22s ease;
+}
+
+@keyframes md-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 消息 hover 操作栏 */
+.msg {
+  position: relative;
+}
+
+.msg-actions {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.msg:hover .msg-actions {
+  opacity: 1;
+}
+
+.msg-action-btn {
+  border: none;
+  background: var(--bg-elevated);
+  border-radius: 6px;
+  width: 26px;
+  height: 26px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.msg-action-btn:hover {
+  background: var(--bg-highlight-hover);
+  color: var(--text-base);
+}
