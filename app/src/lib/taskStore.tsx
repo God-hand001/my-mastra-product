@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { deleteThread, listThreads, type TaskThread } from './agentClient';
 import { getLinks, linkThread, type ThreadLink } from './projectsClient';
+import { isDesktop } from './desktop';
 import { LOCAL_USER_RESOURCE, newTaskId } from './transport';
 
 // 轻量任务状态(plan:不引 zustand,用 React context)
@@ -43,6 +44,12 @@ export function TaskStoreProvider({ children }: { children: ReactNode }) {
       const threads = await listThreads();
       threads.sort((a, b) => (b.updatedAt ?? '').localeCompare(a.updatedAt ?? ''));
       setTasks(threads);
+      // H0:同步加载线程↔项目绑定关系(重启后据此归位到项目下)
+      if (isDesktop()) {
+        getLinks()
+          .then(setLinks)
+          .catch(() => {});
+      }
     } catch (err) {
       // 后端未启动时界面退化为空列表,不白屏(checklist:前后端独立启动)
       console.error('加载任务列表失败', err);
@@ -95,6 +102,10 @@ export function TaskStoreProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void refresh();
+    // 项目增删/绑定变化时同步刷新
+    const onChanged = () => void refresh();
+    window.addEventListener('h0-projects-changed', onChanged);
+    return () => window.removeEventListener('h0-projects-changed', onChanged);
   }, [refresh]);
 
   const value = useMemo(
