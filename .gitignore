@@ -13,3 +13,5 @@ src/mastra/public/
 *.duckdb
 *.duckdb.wal
 storage/
+app/th.json
+app/uiprobe.txt
