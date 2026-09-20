@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!-- M7 验收 fixture:基础映射(T2)——标题三级/段落/两级列表/加粗斜体下划线/颜色/居中/中文字体 -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  @page { size: A4; }
+  body { font-family: "宋体", serif; }
+</style>
+</head>
+<body>
+  <h1>项目进度报告</h1>
+  <p>这是一段<strong>加粗</strong>、<em>斜体</em>、<u>下划线</u>混合的正文,包含<span style="color: #D93025">红色强调文字</span>,用于验证行内样式(F3)与中文字体(F2)。</p>
+  <h2>本章要点</h2>
+  <p style="text-align: center">这一段应当居中显示(AC4)。</p>
+  <h3>明细清单</h3>
+  <ul>
+    <li>一级条目甲</li>
+    <li>一级条目乙
+      <ul>
+        <li>二级条目乙-1</li>
+        <li>二级条目乙-2</li>
+      </ul>
+    </li>
+  </ul>
+  <ol>
+    <li>第一步:准备数据</li>
+    <li>第二步:生成文档</li>
+  </ol>
+  <p style="line-height: 1.8; margin-bottom: 12px">这一段使用 1.8 倍行距与段后距,验证行距与段间距(F3)。</p>
+</body>
+</html>

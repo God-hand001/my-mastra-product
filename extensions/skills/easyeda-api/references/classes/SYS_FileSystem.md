@@ -1,0 +1,1072 @@
+# SYS\_FileSystem class
+
+System / file system interaction class
+
+## Signature
+
+```typescript
+class SYS_FileSystem
+```
+
+## Remarks
+
+## Methods
+
+<table><thead><tr><th>
+
+Method
+
+</th><th>
+
+Modifiers
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[createDirectoryInFileSystem(folderPath)](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+**_(BETA)_** In file system in create folder
+
+</td></tr>
+<tr><td>
+
+[createObjectURL(blob)](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+Create ObjectURL
+
+</td></tr>
+<tr><td>
+
+[deleteFileInFileSystem(uri, force)](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+**_(BETA)_** Delete a file in the file system
+
+</td></tr>
+<tr><td>
+
+[existsPathInFileSystem(uri)](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+**_(BETA)_** Check whether a file or directory exists in the file system
+
+</td></tr>
+<tr><td>
+
+[getDocumentsPath()](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+**_(BETA)_** Get the document directory path
+
+</td></tr>
+<tr><td>
+
+[getEdaPath()](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+**_(BETA)_** Get the EDA document directory path
+
+</td></tr>
+<tr><td>
+
+[getExtensionFile(uri)](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+Get a file from the extension
+
+</td></tr>
+<tr><td>
+
+[getLibrariesPaths()](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+**_(BETA)_** Get the library directory paths
+
+</td></tr>
+<tr><td>
+
+[getProjectsPaths()](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+**_(BETA)_** Get the project directory paths
+
+</td></tr>
+<tr><td>
+
+[listFilesOfFileSystem(folderPath, recursive)](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+**_(BETA)_** View the file list under a file system path
+
+</td></tr>
+<tr><td>
+
+[openReadFileDialog(filenameExtensions, multiFiles)](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+**_(BETA)_** Open the read-file dialog
+
+</td></tr>
+<tr><td>
+
+[openReadFileDialog(filenameExtensions, multiFiles)](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+**_(BETA)_** Open the read-file dialog
+
+</td></tr>
+<tr><td>
+
+[readFileFromFileSystem(uri)](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+**_(BETA)_** Read a file from the file system
+
+</td></tr>
+<tr><td>
+
+[revokeObjectURL(url)](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+Revoke the ObjectURL
+
+</td></tr>
+<tr><td>
+
+[saveFile(fileData, fileName)](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+Save File
+
+</td></tr>
+<tr><td>
+
+[saveFileToFileSystem(uri, fileData, fileName, force)](./SYS_FileSystem.md)
+
+</td><td>
+
+</td><td>
+
+**_(BETA)_** Write a file to the file system
+
+</td></tr>
+</tbody></table>
+
+---
+
+## 方法详情
+
+### createdirectoryinfilesystem
+
+# SYS\_FileSystem.createDirectoryInFileSystem() method
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+
+In file system in create folder
+
+## Signature
+
+```typescript
+function createDirectoryInFileSystem(folderPath: string): Promise<boolean>;
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+folderPath
+
+</td><td>
+
+string
+
+</td><td>
+
+Folder path
+
+</td></tr>
+</tbody></table>
+
+## Returns
+
+Promise&lt;boolean&gt;
+
+Create Whether the operation is successful
+
+## Remarks
+
+Supports recursively creating multi-level directories
+
+Note 1: This API is only valid for clients. Calling it in a browser environment will always `throw Error`
+
+Note 2: This API requires the user to enable the extension external interaction permission, if not enabled, it will always `throw Error` ADD since EDA v3.2.166
+
+### createobjecturl
+
+# SYS\_FileSystem.createObjectURL() method
+
+Create ObjectURL
+
+## Signature
+
+```typescript
+function createObjectURL(blob: Blob | File): string;
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+blob
+
+</td><td>
+
+Blob \| File
+
+</td><td>
+
+Blob or File object
+
+</td></tr>
+</tbody></table>
+
+## Returns
+
+string
+
+ObjectURL string
+
+## Remarks
+
+Create an ObjectURL pointing to the passed-in Blob / File object ADD since EDA v3.2.162
+
+### deletefileinfilesystem
+
+# SYS\_FileSystem.deleteFileInFileSystem() method
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+
+Delete a file in the file system
+
+## Signature
+
+```typescript
+function deleteFileInFileSystem(uri: string, force?: boolean): Promise<boolean>;
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+uri
+
+</td><td>
+
+string
+
+</td><td>
+
+File resource locator. If it ends with a slash `/` (a backslash `\` on Windows), it is recognized as a folder; if it does not end with a slash, it is recognized as a complete file name, in which case the `fileName` parameter is ignored
+
+</td></tr>
+<tr><td>
+
+force
+
+</td><td>
+
+boolean
+
+</td><td>
+
+_(Optional)_ Force delete the folder (whether to force delete the folder when the target is a folder containing files)
+
+</td></tr>
+</tbody></table>
+
+## Returns
+
+Promise&lt;boolean&gt;
+
+Delete Whether the operation is successful
+
+## Remarks
+
+Note 1: This API is only valid for clients. Calling it in a browser environment will always `throw Error`
+
+Note 2: This API requires the user to enable the extension external interaction permission, if not enabled, it will always `throw Error`
+
+### existspathinfilesystem
+
+# SYS\_FileSystem.existsPathInFileSystem() method
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+
+Check whether a file or directory exists in the file system
+
+## Signature
+
+```typescript
+function existsPathInFileSystem(uri: string): Promise<boolean>;
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+uri
+
+</td><td>
+
+string
+
+</td><td>
+
+File resource locator. An absolute path containing the complete file name is required
+
+</td></tr>
+</tbody></table>
+
+## Returns
+
+Promise&lt;boolean&gt;
+
+Whether the file or directory exists
+
+## Remarks
+
+Note 1: This API is only valid for clients. Calling it in a browser environment will always `throw Error`
+
+Note 2: This API requires the user to enable the extension external interaction permission, if not enabled, it will always `throw Error` ADD since EDA v3.2.167
+
+### getdocumentspath
+
+# SYS\_FileSystem.getDocumentsPath() method
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+
+Get the document directory path
+
+## Signature
+
+```typescript
+function getDocumentsPath(): Promise<string>;
+```
+
+## Returns
+
+Promise&lt;string&gt;
+
+Document directory path
+
+## Remarks
+
+In the returned path, the end does not contain a slash `/` (or a backslash `\`<!-- -->)
+
+Note 1: This API is only valid for clients. Calling it in a browser environment will always `throw Error`
+
+Note 2: This API requires the user to enable the extension external interaction permission, if not enabled, it will always `throw Error`
+
+### getedapath
+
+# SYS\_FileSystem.getEdaPath() method
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+
+Get the EDA document directory path
+
+## Signature
+
+```typescript
+function getEdaPath(): Promise<string>;
+```
+
+## Returns
+
+Promise&lt;string&gt;
+
+EDA document directory path
+
+## Remarks
+
+In the returned path, the end does not contain a slash `/` (or a backslash `\`<!-- -->)
+
+Note 1: This API is only valid for clients. Calling it in a browser environment will always `throw Error`
+
+Note 2: This API requires the user to enable the extension external interaction permission, if not enabled, it will always `throw Error`
+
+### getextensionfile
+
+# SYS\_FileSystem.getExtensionFile() method
+
+Get a file from the extension
+
+## Signature
+
+```typescript
+function getExtensionFile(uri: string): Promise<File | undefined>;
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+uri
+
+</td><td>
+
+string
+
+</td><td>
+
+File path
+
+</td></tr>
+</tbody></table>
+
+## Returns
+
+Promise&lt;File \| undefined&gt;
+
+File format file
+
+### getlibrariespaths
+
+# SYS\_FileSystem.getLibrariesPaths() method
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+
+Get the library directory paths
+
+## Signature
+
+```typescript
+function getLibrariesPaths(): Promise<Array<string>>;
+```
+
+## Returns
+
+Promise&lt;Array&lt;string&gt;&gt;
+
+Array of library directory paths
+
+## Remarks
+
+Note 1: This API is only valid for fully offline clients. Calling it in a browser environment will always `throw Error`
+
+Note 2: This API requires the user to enable the extension external interaction permission, if not enabled, it will always `throw Error`
+
+### getprojectspaths
+
+# SYS\_FileSystem.getProjectsPaths() method
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+
+Get the project directory paths
+
+## Signature
+
+```typescript
+function getProjectsPaths(): Promise<Array<string>>;
+```
+
+## Returns
+
+Promise&lt;Array&lt;string&gt;&gt;
+
+Array of project directory paths
+
+## Remarks
+
+Note 1: This API is only valid for semi-offline and fully offline clients. Calling it in a browser environment will always `throw Error`
+
+Note 2: This API requires the user to enable the extension external interaction permission, if not enabled, it will always `throw Error`
+
+### listfilesoffilesystem
+
+# SYS\_FileSystem.listFilesOfFileSystem() method
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+
+View the file list under a file system path
+
+## Signature
+
+```typescript
+function listFilesOfFileSystem(
+	folderPath: string,
+	recursive?: boolean,
+): Promise<Array<ISYS_FileSystemFileList>>;
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+folderPath
+
+</td><td>
+
+string
+
+</td><td>
+
+Directory path
+
+</td></tr>
+<tr><td>
+
+recursive
+
+</td><td>
+
+boolean
+
+</td><td>
+
+_(Optional)_ Whether to recursively get all sub-files
+
+</td></tr>
+</tbody></table>
+
+## Returns
+
+Promise&lt;Array&lt;[ISYS\_FileSystemFileList](../interfaces/ISYS_FileSystemFileList.md)<!-- -->&gt;&gt;
+
+File list in the current directory
+
+## Remarks
+
+Note 1: This API is only valid for clients. Calling it in a browser environment will always `throw Error`
+
+Note 2: This API requires the user to enable the extension external interaction permission, if not enabled, it will always `throw Error`
+
+### openreadfiledialog
+
+# SYS\_FileSystem.openReadFileDialog() method
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+
+Open the read-file dialog
+
+## Signature
+
+```typescript
+function openReadFileDialog(
+	filenameExtensions?: string | Array<string>,
+	multiFiles?: true,
+): Promise<Array<File> | undefined>;
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+filenameExtensions
+
+</td><td>
+
+string \| Array&lt;string&gt;
+
+</td><td>
+
+_(Optional)_ File extension
+
+</td></tr>
+<tr><td>
+
+multiFiles
+
+</td><td>
+
+true
+
+</td><td>
+
+_(Optional)_ Whether multiple files are allowed to be read
+
+</td></tr>
+</tbody></table>
+
+## Returns
+
+Promise&lt;Array&lt;File&gt; \| undefined&gt;
+
+File format file array
+
+### openreadfiledialog_1
+
+# SYS\_FileSystem.openReadFileDialog() method
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+
+Open the read-file dialog
+
+## Signature
+
+```typescript
+function openReadFileDialog(
+	filenameExtensions?: string | Array<string>,
+	multiFiles?: false,
+): Promise<File | undefined>;
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+filenameExtensions
+
+</td><td>
+
+string \| Array&lt;string&gt;
+
+</td><td>
+
+_(Optional)_ File extension
+
+</td></tr>
+<tr><td>
+
+multiFiles
+
+</td><td>
+
+false
+
+</td><td>
+
+_(Optional)_ Whether multiple files are allowed to be read
+
+</td></tr>
+</tbody></table>
+
+## Returns
+
+Promise&lt;File \| undefined&gt;
+
+File format file
+
+### readfilefromfilesystem
+
+# SYS\_FileSystem.readFileFromFileSystem() method
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+
+Read a file from the file system
+
+## Signature
+
+```typescript
+function readFileFromFileSystem(uri: string): Promise<File | undefined>;
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+uri
+
+</td><td>
+
+string
+
+</td><td>
+
+File resource locator. An absolute path containing the complete file name is required
+
+</td></tr>
+</tbody></table>
+
+## Returns
+
+Promise&lt;File \| undefined&gt;
+
+File format file
+
+## Remarks
+
+Note 1: This API is only valid for clients. Calling it in a browser environment will always `throw Error`
+
+Note 2: This API requires the user to enable the extension external interaction permission, if not enabled, it will always `throw Error`
+
+### revokeobjecturl
+
+# SYS\_FileSystem.revokeObjectURL() method
+
+Revoke the ObjectURL
+
+## Signature
+
+```typescript
+function revokeObjectURL(url: string): void;
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+url
+
+</td><td>
+
+string
+
+</td><td>
+
+ObjectURL string
+
+</td></tr>
+</tbody></table>
+
+## Returns
+
+void
+
+## Remarks
+
+Revoke the specified ObjectURL ADD since EDA v3.2.162
+
+### savefile
+
+# SYS\_FileSystem.saveFile() method
+
+Save File
+
+## Signature
+
+```typescript
+function saveFile(fileData: File | Blob, fileName?: string): Promise<void>;
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+fileData
+
+</td><td>
+
+File \| Blob
+
+</td><td>
+
+File data
+
+</td></tr>
+<tr><td>
+
+fileName
+
+</td><td>
+
+string
+
+</td><td>
+
+_(Optional)_ File name
+
+</td></tr>
+</tbody></table>
+
+## Returns
+
+Promise&lt;void&gt;
+
+## Remarks
+
+Calls the browser download API or the Electron save-file API to save the passed-in file stream locally
+
+### savefiletofilesystem
+
+# SYS\_FileSystem.saveFileToFileSystem() method
+
+> This API is provided as a beta preview for developers and may change based on feedback that we receive. Do not use this API in a production environment.
+
+Write a file to the file system
+
+## Signature
+
+```typescript
+function saveFileToFileSystem(
+	uri: string,
+	fileData: File | Blob,
+	fileName?: string,
+	force?: boolean,
+): Promise<boolean>;
+```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+uri
+
+</td><td>
+
+string
+
+</td><td>
+
+File resource locator. If it ends with a slash `/` (a backslash `\` on Windows), it is recognized as a folder; if it does not end with a slash, it is recognized as a complete file name, in which case the `fileName` parameter is ignored
+
+</td></tr>
+<tr><td>
+
+fileData
+
+</td><td>
+
+File \| Blob
+
+</td><td>
+
+File data
+
+</td></tr>
+<tr><td>
+
+fileName
+
+</td><td>
+
+string
+
+</td><td>
+
+_(Optional)_ File name
+
+</td></tr>
+<tr><td>
+
+force
+
+</td><td>
+
+boolean
+
+</td><td>
+
+_(Optional)_ Force write (overwrite the file if it exists)
+
+</td></tr>
+</tbody></table>
+
+## Returns
+
+Promise&lt;boolean&gt;
+
+Whether the write operation was successful. If overwriting is not allowed but the file already exists, `false` is returned
+
+## Remarks
+
+Note 1: This API is only valid for clients. Calling it in a browser environment will always `throw Error`
+
+Note 2: This API requires the user to enable the extension external interaction permission, if not enabled, it will always `throw Error`

@@ -68,7 +68,7 @@ export function ProjectModal({
           <button type="button" className="project-dir-btn" onClick={() => void pickDir()}>
             {dir ? <span className="project-dir-value">📁 {dir}</span> : '+ 选择文件夹'}
           </button>
-          <div className="project-dir-hint">嘉立创办公可读取并处理其中的文件</div>
+          <div className="project-dir-hint">嘉立创Work 可读取并处理其中的文件</div>
         </div>
 
         {error && <div className="sched-error">{error}</div>}

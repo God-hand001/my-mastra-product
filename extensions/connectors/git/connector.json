@@ -1,0 +1,11 @@
+{
+  "name": "git",
+  "description": "读取与分析 Git 仓库的 MCP 服务器。",
+  "transport": "stdio",
+  "command": "${PY}",
+  "args": [
+    "-m",
+    "mcp_server_git"
+  ],
+  "env": {}
+}

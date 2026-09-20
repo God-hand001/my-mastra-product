@@ -13,10 +13,14 @@
     "@assistant-ui/react": "^0.15.18",
     "@assistant-ui/react-ai-sdk": "^1.4.9",
     "@assistant-ui/react-markdown": "^0.14.14",
+    "docx-preview": "^0.4.0",
+    "pptx-preview": "^1.0.7",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.9.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "xlsx": "^0.18.5",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@types/react": "^19.1.0",

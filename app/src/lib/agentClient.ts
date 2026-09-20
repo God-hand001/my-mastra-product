@@ -2,7 +2,7 @@ import { LOCAL_USER_RESOURCE } from './transport';
 import { API_BASE } from './apiBase';
 
 // Mastra server 的线程 REST 接口封装(plan:任务 = thread)
-// 标题由后端 generateTitle 自动生成,不做手动重命名(自动标题会覆盖手动修改)
+// 自动标题只在 thread.title 为空时生成一次;手动重命名后不会覆盖
 
 const AGENT_ID = 'agent';
 
@@ -26,4 +26,13 @@ export async function deleteThread(id: string): Promise<void> {
     method: 'DELETE',
   });
   if (!res.ok) throw new Error(`删除任务失败: ${res.status}`);
+}
+
+export async function renameThread(id: string, title: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/memory/threads/${id}?agentId=${AGENT_ID}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title }),
+  });
+  if (!res.ok) throw new Error(`重命名任务失败: ${res.status}`);
 }

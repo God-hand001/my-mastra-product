@@ -1,0 +1,14 @@
+{
+  "name": "fetch",
+  "description": "通过 MCP 执行 HTTP 请求的 fetch 服务器。",
+  "transport": "stdio",
+  "command": "${PY}",
+  "args": [
+    "-m",
+    "mcp_server_fetch"
+  ],
+  "env": {},
+  "capabilities": {
+    "network": true
+  }
+}

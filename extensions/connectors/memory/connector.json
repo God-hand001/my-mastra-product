@@ -1,0 +1,17 @@
+{
+  "name": "memory",
+  "description": "基于知识图谱的长期记忆 MCP 服务器。",
+  "transport": "stdio",
+  "command": "npx",
+  "args": [
+    "-y",
+    "@modelcontextprotocol/server-memory"
+  ],
+  "env": {},
+  "capabilities": {
+    "network": true,
+    "externalWrite": [
+      "${NPMCACHE}"
+    ]
+  }
+}

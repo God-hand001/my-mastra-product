@@ -1,0 +1,17 @@
+{
+  "name": "everything",
+  "description": "官方 MCP 示例服务器，暴露一组基础工具用于测试与演示。",
+  "transport": "stdio",
+  "command": "npx",
+  "args": [
+    "-y",
+    "@modelcontextprotocol/server-everything"
+  ],
+  "env": {},
+  "capabilities": {
+    "network": true,
+    "externalWrite": [
+      "${NPMCACHE}"
+    ]
+  }
+}

@@ -1,91 +1,137 @@
-import type { ToolCallMessagePartProps } from '@assistant-ui/react';
+﻿import type { ToolCallMessagePartProps } from '@assistant-ui/react';
+import { toolDoneLabel, toolIcon, toolPhaseLabel, toolSummary } from '../lib/toolMeta';
 
-// 工具调用卡(P2:文案与状态对齐千问办公)
-// 运行中:⟳ 动画 + "正在…";完成:✓ + "已…";错误:✗ + 红色
-// 结果/参数默认折叠,点击展开
+// 兼容旧导入:AssistantSteps.tsx 仍从这里导入 toolPhaseLabel,批 3 迁移后删除此行
+export { toolPhaseLabel } from '../lib/toolMeta';
 
-type ToolState = 'running' | 'done' | 'failed';
+type DiffHunk = {
+  type: 'add' | 'del' | 'ctx';
+  text: string;
+};
 
-// 工具名 → 状态文案(关键词匹配,前缀归一化后按序命中)
-const LABEL_RULES: Array<[RegExp, string, string]> = [
-  [/project_list/i, '正在列出项目文件', '已列出项目文件'],
-  [/project_read/i, '正在读取项目文件', '已读取项目文件'],
-  [/project_write/i, '正在写入项目文件', '已写入项目文件'],
-  [/start_schedule/i, '正在创建定时任务', '已创建定时任务'],
-  [/stop_schedule/i, '正在停止定时任务', '已停止定时任务'],
-  [/delete/i, '正在删除文件', '已删除文件'],
-  [/execute_command|command/i, '正在执行命令', '已执行命令'],
-  [/file_stat/i, '正在检查文件', '已检查文件'],
-  [/list_files|list/i, '正在列出文件', '已列出文件'],
-  [/read_file|read/i, '正在读取文件', '已读取文件'],
-  [/write_file|write|edit/i, '正在写入文件', '已写入文件'],
-  [/web_search|search/i, '正在搜索网页', '已完成搜索'],
-  [/web_fetch|fetch/i, '正在抓取网页', '已完成抓取'],
-  [/ask_user/i, '正在等待你的输入', '已收到你的输入'],
-  [/mkdir/i, '正在创建文件夹', '已创建文件夹'],
-];
+type DiffShape = {
+  isNew?: boolean;
+  hunks: DiffHunk[];
+  added: number;
+  removed: number;
+  truncated?: boolean;
+};
 
-function statusOf(props: ToolCallMessagePartProps): ToolState {
-  if (props.isError) return 'failed';
-  const st = (props as { status?: { type?: string } }).status;
-  if (st?.type === 'running' || st?.type === 'streaming') return 'running';
-  if (props.result === undefined) return 'running';
-  return 'done';
+function truncate(value: string, max: number): string {
+  if (value.length <= max) return value;
+  return value.slice(0, max) + '…';
 }
 
-function labelFor(toolName: string, state: ToolState): string {
-  const name = toolName.replace(/^(mastra[_.]|workspace[_.])+/gi, '');
-  for (const [re, running, done] of LABEL_RULES) {
-    if (re.test(name)) return state === 'running' ? running : done;
+function formatValue(value: unknown): string {
+  if (value == null) return '';
+  try {
+    const json = JSON.stringify(value, null, 2);
+    return json.length > 800 ? `${json.slice(0, 800)}\n…(输出过长,已截断)` : json;
+  } catch {
+    return String(value);
   }
-  return state === 'running' ? '正在处理' : '已完成';
+}
+
+function extractErrorSummary(result: unknown): string {
+  if (typeof result === 'string') {
+    const line = result.split(/\r?\n/).find(l => l.trim() !== '') ?? '';
+    return truncate(line.trim(), 80);
+  }
+  if (result && typeof result === 'object') {
+    const err = (result as Record<string, unknown>).error;
+    if (typeof err === 'string') return truncate(err, 80);
+    if (err != null) return truncate(String(err), 80);
+  }
+  return '';
+}
+
+function DiffView({ diff }: { diff: DiffShape }) {
+  const add = diff.added ?? 0;
+  const del = diff.removed ?? 0;
+  const hunks = diff.hunks ?? [];
+
+  if (hunks.length === 0 && diff.truncated) {
+    return <div className="tool-call-diff-empty">差异过大,已省略</div>;
+  }
+
+  return (
+    <div className="tool-call-diff">
+      <div className="tool-call-diff-stats">
+        <span className="diff-stat-add">+{add}</span>
+        <span className="diff-stat-del">-{del}</span>
+        {diff.truncated && <span className="diff-stat-truncated">(已截断)</span>}
+      </div>
+      <pre className="tool-call-diff-pre">
+        {hunks.map((hunk, i) => {
+          const prefix = hunk.type === 'add' ? '+' : hunk.type === 'del' ? '-' : ' ';
+          const cls = `diff-line diff-line-${hunk.type}`;
+          return (
+            <div key={i} className={cls}>
+              <span className="diff-line-prefix" aria-hidden="true">{prefix}</span>
+              <span className="diff-line-text">{hunk.text}</span>
+            </div>
+          );
+        })}
+      </pre>
+    </div>
+  );
 }
 
 export function ToolCallCard(props: ToolCallMessagePartProps) {
-  const { toolName, args, result, isError } = props;
-  const state = statusOf(props);
+  const { toolName, args, result, isError, status } = props;
 
-  const formatValue = (value: unknown): string => {
-    if (value == null) return '';
-    try {
-      const json = JSON.stringify(value, null, 2);
-      return json.length > 800 ? `${json.slice(0, 800)}\n…(输出过长,已截断)` : json;
-    } catch {
-      return String(value);
-    }
-  };
+  // 状态判定:优先 props.status.type;status 缺失(历史消息)回退旧判定
+  const statusType = status?.type;
+  const running =
+    statusType === 'running' ||
+    (statusType === undefined && isError !== true && result === undefined);
+  const failed =
+    statusType === 'incomplete' ||
+    (statusType === undefined && isError === true);
+
+  const actionLabel = running ? toolPhaseLabel(toolName) : toolDoneLabel(toolName);
+  const summaryHint = toolSummary((args ?? {}) as Record<string, unknown>);
+  const statusWord = running ? '运行中…' : failed ? '失败' : '已完成';
+  const errorSummary = failed ? extractErrorSummary(result) : '';
+
+  const resultObj = result && typeof result === 'object' ? (result as Record<string, unknown>) : undefined;
+  const diff = resultObj?.diff;
+  const hasDiff: boolean = !!(diff && typeof diff === 'object' && Array.isArray((diff as DiffShape).hunks));
 
   const formattedArgs = formatValue(args);
   const formattedResult = formatValue(result);
 
   return (
     <details
-      className={`tool-card${state === 'running' ? ' is-running' : ''}${state === 'failed' ? ' is-error' : ''}`}
+      className={`tool-call-card${running ? ' is-running' : ''}${failed ? ' is-error' : ''}`}
     >
-      <summary className="tool-card-summary">
-        <span className="tool-card-icon">
-          {state === 'running' ? (
-            <span className="tool-card-spinner" />
-          ) : state === 'failed' ? (
-            '✗'
-          ) : (
-            '✓'
-          )}
+      <summary>
+        <span className="tool-call-icon">{toolIcon(toolName)}</span>
+        <span className="tool-call-action">{actionLabel}</span>
+        {summaryHint && (
+          <span className="tool-call-hint">{summaryHint}</span>
+        )}
+        <span className={`tool-call-status${running ? ' running' : ''}${failed ? ' error' : ''}`}>
+          {statusWord}
         </span>
-        <span className="tool-card-label">{labelFor(toolName, state)}</span>
-        <span className="tool-card-chev">▾</span>
+        {/* 失败摘要必须放在 summary 内:details 折叠时只渲染 summary,
+            放在外面的话未展开状态看不到错误原因(违反 F15) */}
+        {failed && errorSummary && (
+          <span className="tool-call-errline">{errorSummary}</span>
+        )}
       </summary>
-      <div className="tool-card-body">
+      <div className="tool-call-body">
+        {hasDiff && <DiffView diff={diff as DiffShape} />}
         {formattedArgs && (
           <>
-            <div className="tool-card-label">参数</div>
-            <pre className="tool-card-pre">{formattedArgs}</pre>
+            <div className="tool-call-section">参数</div>
+            <pre className="tool-call-pre">{formattedArgs}</pre>
           </>
         )}
-        {formattedResult && (
+        {!hasDiff && formattedResult && (
           <>
-            <div className="tool-card-label">结果</div>
-            <pre className="tool-card-pre">{formattedResult}</pre>
+            <div className="tool-call-section">结果</div>
+            <pre className="tool-call-pre">{formattedResult}</pre>
           </>
         )}
       </div>

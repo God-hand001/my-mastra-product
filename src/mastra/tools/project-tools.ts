@@ -3,8 +3,10 @@ import { z } from 'zod';
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { resolveProjectDir } from '../services/project-store';
+import { computeContentDiff } from '../services/content-diff';
 
 // 项目文件工具(H0,读写版)
+// project_write_file 写入成功后返回行级 diff,用于前端渲染改动差异
 // 激活条件:requestContext.projectDir 指向已注册项目的目录(N1)
 // 未激活/未注册时返回提示文本,不执行任何 fs 操作
 const MAX_TEXT_CHARS = 300_000;
@@ -105,6 +107,13 @@ export const projectWriteFileTool = createTool({
   outputSchema: z.object({
     path: z.string().optional(),
     bytes: z.number().optional(),
+    diff: z.object({
+      isNew: z.boolean(),
+      hunks: z.array(z.object({ type: z.enum(['add', 'del', 'ctx']), text: z.string() })),
+      added: z.number(),
+      removed: z.number(),
+      truncated: z.boolean(),
+    }).optional(),
     error: z.string().optional(),
   }),
   execute: async ({ filePath, content }, context) => {
@@ -118,8 +127,29 @@ export const projectWriteFileTool = createTool({
       if (buf.length > MAX_TEXT_CHARS) {
         return { error: `内容过大(${buf.length} 字节),超过 30 万字符上限` };
       }
+
+      // 读取旧内容用于 diff;失败时不阻断写入,仅降级 diff
+      let oldStr: string | null = null;
+      let readFailed = false;
+      try {
+        oldStr = await readFile(abs, 'utf-8');
+      } catch (err) {
+        if (err && typeof err === 'object' && 'code' in err && (err as { code?: string }).code === 'ENOENT') {
+          oldStr = null;
+        } else {
+          oldStr = null;
+          readFailed = true;
+        }
+      }
+
+      let diff = computeContentDiff(oldStr, content);
+      if (readFailed) {
+        // 读旧内容失败不阻断写入,diff 降级为空
+        diff = { isNew: oldStr === null, hunks: [], added: 0, removed: 0, truncated: true };
+      }
+
       await writeFile(abs, buf);
-      return { path: filePath, bytes: buf.length };
+      return { path: filePath, bytes: buf.length, diff };
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err);
       return { error: `写入失败: ${reason}` };

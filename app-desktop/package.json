@@ -14,7 +14,7 @@
   },
   "build": {
     "appId": "com.jlc.bangong",
-    "productName": "嘉立创办公",
+    "productName": "嘉立创Work",
     "files": [
       "main.js",
       "package.json"
@@ -23,9 +23,14 @@
       {
         "from": "../app/dist",
         "to": "dist"
+      },
+      {
+        "from": "../vendor/python",
+        "to": "vendor/python"
       }
     ],
     "win": {
+      "icon": "icon.ico",
       "target": [
         "nsis"
       ]

@@ -1,0 +1,47 @@
+﻿/* PPTX 预览样式(M8-T5):与 docx 预览体验一致,配色沿用千问设计令牌。 */
+
+.pptx-view {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: var(--bg-container, #faf9f6);
+  padding: 24px 16px;
+}
+
+.pptx-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100%;
+}
+
+/* 覆盖 pptx-preview 默认的黑色背景,改用面板背景 */
+.pptx-body .pptx-preview-wrapper {
+  background: transparent !important;
+  width: 100% !important;
+}
+
+/* 每页 slide 的容器:白底、圆角、阴影、底部间距 */
+.pptx-body .pptx-preview-slide-wrapper {
+  margin-bottom: 20px;
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(32, 33, 22, 0.08);
+}
+
+.pptx-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(253, 252, 250, 0.85);
+  pointer-events: auto;
+}
+
+/* 浮层内文案宽度约束:长错误提示必须换行居中,不能单行溢出被裁(2026-09-18 用户反馈) */
+.pptx-overlay .preview-state {
+  max-width: min(420px, 86%);
+  text-align: center;
+}

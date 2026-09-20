@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!-- M7 验收 fixture:分节分页+目录+页面设置+页眉页脚(T4)——F5/F6/F10/F11/AC6/AC7/AC12/AC13/AC16 -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="doc-header" content="季度经营简报">
+<meta name="doc-footer" content="第 {{page}} 页 / 共 {{pages}} 页">
+<style>
+  @page { size: A4; margin: 2.54cm 3.18cm; }
+  body { font-family: "宋体", serif; }
+</style>
+</head>
+<body>
+  <section>
+    <h1>封面章</h1>
+    <p>这是第一节的内容,不应出现"段前分页"。</p>
+  </section>
+  <section>
+    <nav data-toc>目录占位</nav>
+    <h2>第二章 概述</h2>
+    <p>第二节从新页开始;目录占位被移除后,分页属性移交本节首段(F14 边界二)。</p>
+    <h3>2.1 背景说明</h3>
+    <p>三级标题应被目录收录。</p>
+  </section>
+  <section>
+    <h2>第三章 财务数据</h2>
+    <p>第三节同样从新页开始(AC6:Word 与预览面板均按节切页)。</p>
+  </section>
+</body>
+</html>

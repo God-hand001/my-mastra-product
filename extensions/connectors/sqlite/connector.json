@@ -1,0 +1,13 @@
+{
+  "name": "sqlite",
+  "description": "操作 SQLite 数据库的 MCP 服务器，默认使用 workspace/data/sample.sqlite。",
+  "transport": "stdio",
+  "command": "${PY}",
+  "args": [
+    "-c",
+    "import sys; from mcp_server_sqlite import main; main()",
+    "--db-path",
+    "${ROOT}/data/sample.sqlite"
+  ],
+  "env": {}
+}

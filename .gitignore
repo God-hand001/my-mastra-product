@@ -13,11 +13,28 @@ src/mastra/public/
 *.duckdb
 *.duckdb.wal
 storage/
-app/th.json
-app/uiprobe.txt
+vendor/python/
+vendor/codex/
+vendor/_dist/
+.sandbox-home/
+extensions-local/
 
-# 调试残留与反编译文档(不入库)
+# 本地备份/生成产物,非源码
+.env.backup-*
+vendor/_verify_out/
+_docx_compare/
+
+# 反编译第三方桌面应用的脚本与分析文档:知识产权/合规风险,不推公开仓库
+app-desktop/extract-*.js
+app-desktop/check-asar.js
+app-desktop/inspect-qwenwork.js
+app-desktop/list-out-qwenwork.js
+app-desktop/summarize-qwenwork.js
+docs/spec/qw-reverse-analysis.md
+docs/spec/m15-逆向分析.md
+
+# 调试残留与嵌套仓库临时克隆
 app/th.json
 app/th2.json
 app/uiprobe.txt
-docs/spec/m15-逆向分析.md
+scripts/.tmp-anthropics-skills/

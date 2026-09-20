@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!-- M7 验收 fixture:图片+装饰组件(T5)——F12/AC14(三来源图片,一张故意 404)、F13/AC15(标注框/hr/数据卡片) -->
+<!-- 本地图 sample.png 由验证脚本生成(1×1 红 PNG);base64 图内联;远程图域名故意不存在 -->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>body { font-family: "宋体", serif; }</style>
+</head>
+<body>
+  <h1>组件展示</h1>
+  <p>三张图片:本地路径、base64 内联、远程 URL(最后一个故意 404)。</p>
+  <p>本地图(width 96):<img src="sample.png" width="96"></p>
+  <p>base64 图(width 64):<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==" width="64"></p>
+  <p>远程图(404):<img src="https://this-domain-does-not-exist-12345.invalid/pic.png" width="120"></p>
+  <div class="callout" data-type="warning">
+    <p>注意:远程图失败时此处之后的转换应继续,且结果 warnings 应恰好包含 1 条 image_failed(AC14)。</p>
+  </div>
+  <hr>
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="stat-title">本月营收</div>
+      <div class="stat-value">¥1,284,500</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">环比增长</div>
+      <div class="stat-value">+12.4%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">活跃客户</div>
+      <div class="stat-value">3,062</div>
+    </div>
+  </div>
+  <div class="callout" data-type="info">
+    <p>提示:这是 info 类型标注框,应有浅蓝底与左侧蓝色条(AC15)。</p>
+  </div>
+</body>
+</html>

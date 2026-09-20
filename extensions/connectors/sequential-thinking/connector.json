@@ -1,0 +1,17 @@
+{
+  "name": "sequential-thinking",
+  "description": "支持逐步推理与思维链的 MCP 服务器。",
+  "transport": "stdio",
+  "command": "npx",
+  "args": [
+    "-y",
+    "@modelcontextprotocol/server-sequential-thinking"
+  ],
+  "env": {},
+  "capabilities": {
+    "network": true,
+    "externalWrite": [
+      "${NPMCACHE}"
+    ]
+  }
+}

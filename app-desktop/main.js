@@ -1,4 +1,4 @@
-const { app, BrowserWindow, protocol, ipcMain, dialog, shell } = require('electron');
+const { app, BrowserWindow, Menu, protocol, ipcMain, dialog, shell } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 
@@ -40,7 +40,7 @@ function registerApiProtocol() {
       console.log('[appapi-error]', req.url, err?.message ?? err);
       return new Response(JSON.stringify({ error: `网关请求失败: ${err?.message ?? err}` }), {
         status: 502,
-        headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' },
+        headers: { 'access-control-allow-origin': '*', 'content-type': 'application/json' },
       });
     }
   });
@@ -59,7 +59,7 @@ function localPage(html) {
 }
 
 function backendDownHtml() {
-  return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>嘉立创办公</title></head>
+  return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>嘉立创Work</title></head>
 <body style="font-family:system-ui,'Microsoft YaHei',sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#f7f8fa;color:#1f2329">
   <div style="text-align:center">
     <div style="font-size:52px">🔌</div>
@@ -111,14 +111,19 @@ function createWindow() {
   win = new BrowserWindow({
     width: 1280,
     height: 820,
-    title: '嘉立创办公',
+    title: '嘉立创Work',
+    // 嘉立创专属图标(由 logo PNG 打包的 ICO;缺省时 Electron 用默认图标)
+    ...(fs.existsSync(path.join(__dirname, 'icon.ico')) ? { icon: path.join(__dirname, 'icon.ico') } : {}),
     webPreferences: {
       contextIsolation: true,
       // H0:目录选择桥(preload → ipcMain)
       preload: path.join(__dirname, 'preload.js'),
       // 本地壳:file:// → http://localhost 受 Chromium 私有网络访问保护(PNA)拦截,
-      // 纯本地单机应用关闭该检查以放行 API 请求(壳内只加载本地构建产物)
+      // 纯本地单机应用关闭该检查以放行 API 请求(壳内只加载本地构建产物)。
+      // 注意:该设置只影响主窗口,webview 通过自身 webpreferences 属性恢复隔离,不会继承此设置。
       webSecurity: false,
+      // M6:启用 webview 标签,为内置浏览器提供网页渲染能力
+      webviewTag: true,
     },
   });
   // 渲染进程报错转发到主进程 stdout(桌面端排障用)
@@ -136,6 +141,8 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // 去掉 File/Edit/View 原生菜单栏(Electron 默认菜单),对齐千问办公的简洁顶栏
+  Menu.setApplicationMenu(null);
   // H0:打开项目文件夹
   ipcMain.handle('open-path', async (_e, dir) => {
     return shell.openPath(dir);
@@ -150,6 +157,29 @@ app.whenReady().then(() => {
     return result.filePaths[0];
   });
   registerApiProtocol();
+
+  // M6:为内置浏览器施加安全约束,仅作用于 webview,不影响主窗口
+  app.on('web-contents-created', (_event, contents) => {
+    if (contents.getType() !== 'webview') return;
+
+    // 页面内 target=_blank 等新开窗口请求不弹出系统窗口,由渲染层在产品内处理
+    contents.setWindowOpenHandler(() => ({ action: 'deny' }));
+
+    // 拦截页面内导航,仅允许 http/https,兜住用户点击非法链接的场景
+    contents.on('will-navigate', (event, url) => {
+      try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+          event.preventDefault();
+          console.log('[webview-blocked]', url);
+        }
+      } catch {
+        event.preventDefault();
+        console.log('[webview-blocked-invalid]', url);
+      }
+    });
+  });
+
   createWindow();
 });
 app.on('window-all-closed', () => app.quit());
