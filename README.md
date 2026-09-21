@@ -1,58 +1,101 @@
-# my-mastra-product
+# 嘉立创Work
 
-Welcome to your new [Mastra](https://mastra.ai) project! We're excited to see what you build.
+基于 [Mastra](https://mastra.ai) + TypeScript 实现的办公 Agent 产品：用户描述任务，Agent 调用工具执行并交付产物。
 
-This starter provides you with a general-purpose Mastra agent that can research current information, manage multi-step tasks, work with local files, run approved shell commands, and create recurring schedules.
+## 功能特性
 
-## Features
+- **办公文档生成**：Word（docx.js 脚本直出）、PPT（pptxgenjs）、Excel（openpyxl + 公式重算校验），产物落工作区并在右侧预览栏渲染
+- **Windows 沙箱**：所有子进程经 codex 沙箱围栏执行（写限制 / 拒读敏感文件 / 断网），越界操作需用户审批提权
+- **扩展体系**：内置技能（docx / pptx / 前端设计 / EDA 等）与 MCP 连接器，面板一键启停
+- **场景角色**：通用 / 设计师 / 幻灯片 / 写作四类角色，各有独立提示词与技能白名单
+- **自定义模型**：「我的模型」页接入任意 OpenAI 兼容网关，对话栏即选即用
+- **任务协作**：待办清单面板、上下文用量统计与手动压缩、定时任务、网盘与项目系统
 
-- A project-level `workspace/` for files and command execution
-- Approval gates for file changes, deletions, and shell commands
-- Conversation memory, generated thread titles, and task tracking
-- Built-in web search and direct web page fetching
-- Recurring schedules that persist across restarts
-- Local libSQL storage and DuckDB observability, with optional Turso storage
-- A bundled Mastra skill that helps coding agents use current Mastra APIs
+## 环境要求
 
-## Get started
+- Node.js ≥ 22.13（含 npm）
+- Windows 10/11（沙箱与文档生成链路依赖 Windows 特性）
+- 首次安装依赖需要联网
 
-Set your `OPENAI_API_KEY` in `.env` or in your environment, then run:
+## 首次准备
+
+```shell
+# 1. 安装三处依赖
+npm install
+cd app && npm install && cd ..
+cd app-desktop && npm install && cd ..
+
+# 2. 配置 API Key:复制 .env.example 为 .env 并填入真实 key
+#    DEEPSEEK_API_KEY   DeepSeek 官方 API
+#    TAVILY_API_KEY     Tavily 联网搜索(免费注册)
+copy .env.example .env
+
+# 3. 就位 Python 运行时(vendor/python,文档生成依赖,国内镜像可直连)
+node scripts/setup-python-runtime.mjs
+
+# 4. 就位 codex 沙箱运行时(vendor/codex)
+node scripts/setup-sandbox-runtime.mjs
+
+# 5. 沙箱 elevated 档一次性初始化(需管理员 PowerShell,仅执行一次)
+#    把 <项目根> 替换为实际路径
+vendor\codex\bin\codex.exe sandbox setup --elevated --current-user --codex-home <项目根>\.sandbox-home
+
+# 6. 内置技能与连接器配置(如 extensions/ 目录已存在可跳过)
+node scripts/setup-extensions.mjs
+```
+
+## 启动
+
+### 1. 启动后端（必须先启动，端口 4111）
 
 ```shell
 npm run dev
 ```
 
-Open [http://localhost:4111](http://localhost:4111) in your browser to access [Mastra Studio](https://mastra.ai/docs/studio/overview).
+### 2. 桌面端（推荐）
 
-Select **Agent** in Mastra Studio and try one of these prompts:
+```shell
+cd app-desktop
+npm run desktop        # 加载 app/dist 构建产物
+```
 
-- `Get the weather forecast for Austin this weekend.`
-- `Create a landing page for a Japanese sakura festival.`
-- `Check the SPCX stock price now, then check it every minute.`
+桌面端启动时会自动探测后端：后端未就绪时显示提示页，每 3 秒自动重连。
 
-The agent asks for approval before it changes files or runs commands. When it creates a schedule, it returns an ID that you can use to pause the schedule.
+**桌面端开发模式**（前端改动实时热更新，需先另开终端跑着 `cd app && npm run dev`）：
 
-## Workspace safety
+```shell
+cd app-desktop
+npm run desktop:dev    # 加载 http://localhost:5173
+```
 
-The local filesystem tools stay inside the project-level `workspace/` directory. Shell commands start in that directory, but `LocalSandbox` does not provide operating-system isolation by default. Review command approvals carefully, and do not expose this template through an unauthenticated public server.
+### 3. 浏览器访问（不装桌面壳也可以用）
 
-## Storage
+```shell
+cd app
+npm run build     # 构建(桌面端非 dev 模式也依赖此步的产物)
+npm run dev       # 开发服务器,浏览器打开 http://localhost:5173
+```
 
-The default `file:./mastra.db` database stores agent memory, tasks, and schedules locally. To use Turso, set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in `.env`.
+### 4. 打 Windows 安装包（NSIS 安装器）
 
-Recurring schedules continue to use model tokens until you pause them. Ask the agent to pause a schedule with the ID returned by `start_schedule`.
+```shell
+cd app-desktop
+npm run dist      # 自动先构建前端,产物在 app-desktop/release/
+```
 
-## Making it yours
+## 目录结构
 
-- Edit `src/mastra/agents/agent.ts` to change the model, instructions, memory, workspace, or approval policy.
-- Edit `src/mastra/tools/` to customize scheduling.
-- Edit `src/mastra/index.ts` to change storage and observability.
-- Add files or reusable skills under `workspace/` for the agent to use.
+| 路径 | 说明 |
+|---|---|
+| `src/mastra/` | 后端：Agent 定义、工具（文档生成/搜索/沙箱）、HTTP 路由、服务层 |
+| `app/` | 前端：React + Vite，对话界面、预览面板、扩展/模型管理页 |
+| `app-desktop/` | 桌面壳：Electron，加载前端产物并转发 API 请求 |
+| `extensions/` | 内置技能与 MCP 连接器（面板可启停） |
+| `vendor/` | 运行时（Python / codex 沙箱），由 setup 脚本生成，不入库 |
+| `docs/spec/` | 各里程碑（M0–M17）的 spec / plan / task / checklist 文档 |
 
-## Learn more
+## 安全说明
 
-To learn more about Mastra, visit our [documentation](https://mastra.ai/docs/). If you're new to AI agents, check out our [course](https://mastra.ai/learn) and [YouTube videos](https://youtube.com/@mastra-ai). You can also join our [Discord](https://discord.gg/BTYqqHKUrf) community to get help and share your projects.
-
-## Deploy to the Mastra platform
-
-The [Mastra platform](https://projects.mastra.ai) provides two products for deploying and managing AI applications built with the Mastra framework. Learn more in the [Mastra platform documentation](https://mastra.ai/docs/mastra-platform/overview).
+- Agent 的所有命令与脚本在受限沙箱内执行：只能读写工作区、默认断网、无法读取 `.env` 与凭据文件；越界操作需用户在界面上审批提权
+- `.env` 已被 `.gitignore` 排除，不会进入版本库；请勿在代码中硬编码 API Key
+- 请勿将该服务直接暴露到公网未鉴权使用
