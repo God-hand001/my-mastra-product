@@ -83,6 +83,27 @@ cd app-desktop
 npm run dist      # 自动先构建前端,产物在 app-desktop/release/
 ```
 
+## 沙箱排错（新机器最常见）
+
+`vendor/` 目录（300MB 运行时）**不在仓库里**，克隆后必须按顺序执行"首次准备"的第 3、4、5 步。两个典型报错：
+
+| 报错关键字 | 原因 | 解法 |
+|---|---|---|
+| `未找到沙箱运行时` / `vendor\codex\bin\codex.exe 不存在` | 没跑下载脚本 | `node scripts/setup-sandbox-runtime.mjs` |
+| `沙箱 elevated 档未完成初始化` / `缺少 setup_marker.json` | codex 下载好了，但没做管理员初始化 | **管理员** PowerShell 里执行下面这条 |
+
+管理员初始化（`Win + X` → 选"终端(管理员)"，`cd` 到项目根后执行）：
+
+```powershell
+vendor\codex\bin\codex.exe sandbox setup --elevated --current-user --codex-home <项目根>\.sandbox-home
+```
+
+这条命令做什么：在 Windows 里创建一个专用的受限本地账户（需要管理员权限，因为建账户和打 ACL 是管理员操作），之后 agent 的所有命令与脚本都以该账户运行，实现"只能写工作区 / 拒读 .env 与凭据 / 默认断网"三重隔离；`.sandbox-home` 是它的凭据与标记目录（已 gitignore，不入库）。
+
+**临时绕过**（仅本地调试，会失去拒读与断网隔离）：设环境变量 `MEW_SANDBOX_LEVEL=restricted-token` 后启动后端。
+
+Python 文档生成链路同理：报 `未找到 Python 运行时` 就先跑 `node scripts/setup-python-runtime.mjs`。
+
 ## 目录结构
 
 | 路径 | 说明 |
