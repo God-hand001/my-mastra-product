@@ -1,4 +1,4 @@
-# 嘉立创Work
+# mastra-work
 
 基于 [Mastra](https://mastra.ai) + TypeScript 实现的办公 Agent 产品：用户描述任务，Agent 调用工具执行并交付产物。
 
